@@ -34,30 +34,22 @@ func init() {
 // SetupRouter Setup path
 func SetupRouter() *gin.Engine {
 
-	//静态目录配置
+	// static
 	staticPath := utils.GetConfStr("router.static")
 	Router.Static("/static", staticPath)
 
-	//模板
+	// tpl
 	viewPath := utils.GetConfStr("router.view")
 	Router.LoadHTMLGlob(viewPath)
 
-	//Session测试-Redis存储
-	Router.GET("/session", ctrls.SessionAction)
-
-	//Redis测试
-	Router.GET("/redis", ctrls.RedisSetAction)
-
-	//获取用户订单
-	Router.GET("/orders", ctrls.GetOrderList)
-
-	Router.POST("/protected", func(c *gin.Context) {
-		c.String(200, "CSRF token is valid")
-	})
-
+	// 404
 	Router.NoRoute(func(ctx *gin.Context) {
 		ctx.HTML(http.StatusNotFound, "404.html", "")
 	})
+
+	// order paths
+	orderRouter := Router.Group("/order")
+	orderRouter.GET("/list", ctrls.GetOrderList)
 
 	return Router
 }

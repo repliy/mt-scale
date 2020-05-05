@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	syslog.Debug(">>>>>> :init config files")
+	syslog.Debug("init config files")
 	env := os.Getenv("APP_ENV")
 
 	confName := "conf.dev"
@@ -23,7 +23,7 @@ func init() {
 	viper.SetConfigType("yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		syslog.Error(">>>>>> :viper read config error", err)
+		syslog.Error("viper read config error", err)
 	}
 }
 
