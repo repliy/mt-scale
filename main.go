@@ -3,6 +3,7 @@ package main
 import (
 	"mt-scale/models"
 	"mt-scale/route"
+	"mt-scale/syslog"
 	"mt-scale/utils"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-
+	syslog.Debug("Application Starting ...")
 	gin.SetMode(gin.DebugMode)
 	r := route.SetupRouter()
 
