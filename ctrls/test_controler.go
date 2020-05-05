@@ -1,8 +1,6 @@
 package ctrls
 
 import (
-	"mt-scale/jobs"
-	"mt-scale/queue"
 	"mt-scale/utils"
 
 	"github.com/gin-contrib/sessions"
@@ -40,9 +38,4 @@ func SessionAction(ctx *gin.Context) {
 	session.Save()
 	ctx.JSON(200, gin.H{"count": count})
 
-}
-
-//队列生产者测试
-func QueueAction(ctx *gin.Context) {
-	queue.NewSender("SomeQueue", "Dosome", jobs.Subscribe{Name: "We are doing..."}).Send()
 }

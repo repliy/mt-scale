@@ -48,8 +48,6 @@ func SetupRouter() *gin.Engine {
 	//Redis测试
 	Router.GET("/redis", ctrls.RedisSetAction)
 
-	Router.GET("/queue", ctrls.QueueAction)
-
 	//获取用户订单
 	Router.GET("/orders", ctrls.GetOrderList)
 
