@@ -2,6 +2,7 @@ package route
 
 import (
 	"mt-scale/ctrls"
+	"mt-scale/middleware/jwt"
 	"mt-scale/utils"
 	"net/http"
 
@@ -44,13 +45,12 @@ func init() {
 
 	// Router.Use(sessions.Sessions(session_name, store))
 
-	// Router.Use(csrf.Middleware(csrf.Options{
-	// 	Secret: csrfscret,
-	// 	ErrorFunc: func(c *gin.Context) {
-	// 		c.String(400, "CSRF token mismatch")
-	// 		c.Abort()
-	// 	},
-	// }))
+	Router.Use(jwt.Middleware(jwt.Options{
+		ErrorFunc: func(c *gin.Context) {
+			c.String(400, "CSRF token mismatch")
+			c.Abort()
+		},
+	}))
 
 }
 

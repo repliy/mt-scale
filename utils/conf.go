@@ -27,8 +27,20 @@ func init() {
 	}
 }
 
-// GetConfStr Get Yaml file value
+// GetConfStr Get Yaml file string value
 func GetConfStr(key string) string {
 	confVal := viper.GetString(key)
+	return confVal
+}
+
+// GetConfArr Get yaml file slice value
+func GetConfArr(key string) []string {
+	confVal := viper.GetStringSlice(key)
+	return confVal
+}
+
+// GetConfInt Get yaml file int value
+func GetConfInt(key string) int {
+	confVal := viper.GetInt(key)
 	return confVal
 }
