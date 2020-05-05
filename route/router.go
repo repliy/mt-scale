@@ -67,8 +67,6 @@ func SetupRouter() *gin.Engine {
 
 	//Session测试-Redis存储
 	Router.GET("/session", ctrls.SessionAction)
-	//Cookie测试
-	Router.GET("/cookie", ctrls.CookieAction)
 	//Redis测试
 	Router.GET("/redis", ctrls.RedisSetAction)
 

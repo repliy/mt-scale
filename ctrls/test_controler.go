@@ -4,7 +4,6 @@ import (
 	"mt-scale/jobs"
 	"mt-scale/queue"
 	"mt-scale/utils"
-	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,7 @@ import (
 //Redis测试
 func RedisSetAction(ctx *gin.Context) {
 
-	rds := utils.RedisPool.Get()
+	rds := utils.CreateRedisPool().Get()
 
 	count, _ := redis.Int(rds.Do("GET", "count"))
 	count++
@@ -40,20 +39,6 @@ func SessionAction(ctx *gin.Context) {
 	session.Set("count", count)
 	session.Save()
 	ctx.JSON(200, gin.H{"count": count})
-
-}
-
-//Cookie测试
-func CookieAction(ctx *gin.Context) {
-
-	var count int
-	v, _ := ctx.Cookie("count")
-
-	count, _ = strconv.Atoi(v)
-	count++
-	utils.SetCookie(ctx, "count", strconv.Itoa(count), 3600*24)
-
-	ctx.JSON(200, gin.H{"count": v})
 
 }
 

@@ -3,10 +3,10 @@ package models
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"log"
 	"time"
 
+	"mt-scale/syslog"
 	"mt-scale/utils"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	fmt.Println(">>>>>> :init MongoDB")
+	syslog.Debug("Init mongoDB")
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	url := utils.GetConfStr("database.url")
@@ -37,23 +37,22 @@ func init() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	syslog.Debug("Connected to MongoDB!")
 }
 
 // MongoDbCheck Check mongo database connect.
 func MongoDbCheck() {
 	checkCount++
-	fmt.Printf(">>>>>> :Check mongo database %d times.\n", checkCount)
+	syslog.Debug("Check mongo database times", checkCount)
 
 	if client != nil {
 		if err := client.Ping(context.TODO(), nil); err != nil {
-			fmt.Println(">>>>>> :Database error ", err)
-			log.Fatal(err)
+			syslog.Error("Database error.", err)
 		} else {
-			fmt.Println(">>>>>> :Database is ok.")
+			syslog.Debug("Database is ok.")
 		}
 	} else {
-		fmt.Println(">>>>>> :Mongo database client is nil .")
+		syslog.Error("Mongo database client is nil .")
 	}
 }
 
