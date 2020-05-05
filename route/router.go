@@ -23,50 +23,28 @@ func init() {
 
 	Router.Use(cors.New(config))
 
-	// session_name := utils.Config.Section("session").Key("sessionname").String()
-	// domain := utils.Config.Section("session").Key("sessiondomain").String()
-	// maxage, _ := utils.Config.Section("session").Key("sessiongcmaxlifetime").Int()
-	// csrfscret := utils.Config.Section("session").Key("csrfscret").String()
-	//Session配置，Redis存储
-	//store,err:=redis.NewStore(10,"tcp","rs1.rs.baidu.com:6379","",[]byte("asfajfa;lskjr2"))
-	// store, err := redis.NewStoreWithPool(utils.RedisPool, []byte("as&8(0fajfa;lskjr2"))
-	// store.Options(sessions.Options{
-	// 	"/",
-	// 	domain,
-	// 	maxage,
-	// 	false, //https 时使用
-	// 	true,  //true:JS脚本无法获取cookie信息
-	// })
-
-	// if err != nil {
-	// 	// Handle the error. Probably bail out if we can't connect.
-	// 	fmt.Println("redis.NewStore error")
-	// }
-
-	// Router.Use(sessions.Sessions(session_name, store))
-
 	Router.Use(jwt.Middleware(jwt.Options{
 		ErrorFunc: func(c *gin.Context) {
 			c.String(400, "CSRF token mismatch")
 			c.Abort()
 		},
 	}))
-
 }
 
 // SetupRouter Setup path
 func SetupRouter() *gin.Engine {
 
 	//静态目录配置
-	public := utils.Config.Section("router").Key("public").String()
-	Router.Static("/public", public)
+	staticPath := utils.GetConfStr("router.static")
+	Router.Static("/static", staticPath)
 
 	//模板
-	viewPath := utils.Config.Section("router").Key("view_path").String()
+	viewPath := utils.GetConfStr("router.view")
 	Router.LoadHTMLGlob(viewPath)
 
 	//Session测试-Redis存储
 	Router.GET("/session", ctrls.SessionAction)
+
 	//Redis测试
 	Router.GET("/redis", ctrls.RedisSetAction)
 

@@ -15,7 +15,9 @@ service:
   port: :8083
   ignoreurl:
     - /order/list
-
+router:
+  static: /
+  view: views/*
 log:
   logfile: /tmp/lobster.log
   errorfile: /tmp/lobster.err
