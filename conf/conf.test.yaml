@@ -1,0 +1,16 @@
+database:
+  url: mongodb://dev:hfxdev@portal.marinethinking.ai:27017,portal-test.marinethinking.ai:27017/admin?replicaSet=rs0&ssl=true
+  name: lobster_test
+
+service:
+  url: :8981
+
+log:
+  logfile: /tmp/lobster.log
+  errorfile: /tmp/lobster.err
+
+token:
+  exp: 48   #token expired after 48 hours
+
+idp:
+  url: https://portal-test.marinethinking.ai:8881
