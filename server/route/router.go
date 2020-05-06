@@ -1,10 +1,10 @@
 package route
 
 import (
+	"mt-scale/common"
 	"mt-scale/ctrls"
 	"mt-scale/exception"
 	"mt-scale/middleware/jwt"
-	"mt-scale/utils"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -66,11 +66,11 @@ func init() {
 func SetupRouter() *gin.Engine {
 
 	// static
-	staticPath := utils.GetConfStr("router.static")
+	staticPath := common.GetConfStr("router.static")
 	Router.Static("/static", staticPath)
 
 	// tpl
-	viewPath := utils.GetConfStr("router.view")
+	viewPath := common.GetConfStr("router.view")
 	Router.LoadHTMLGlob(viewPath)
 
 	// 404

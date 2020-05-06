@@ -1,10 +1,10 @@
 package main
 
 import (
+	"mt-scale/common"
 	"mt-scale/route"
 	"mt-scale/syslog"
 	"mt-scale/task"
-	"mt-scale/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +16,6 @@ func main() {
 
 	gin.SetMode(gin.DebugMode)
 	r := route.SetupRouter()
-	port := utils.GetConfStr("service.port")
+	port := common.GetConfStr("service.port")
 	r.Run(port)
 }

@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
+	"mt-scale/common"
 	"mt-scale/syslog"
-	"mt-scale/utils"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -23,7 +23,7 @@ func init() {
 	syslog.Debug("Init mongoDB")
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	url := utils.GetConfStr("database.url")
+	url := common.GetConfStr("database.url")
 
 	clientOptions := options.Client().ApplyURI(url)
 	clientOptions.TLSConfig = &tls.Config{}
@@ -57,7 +57,7 @@ func MongoDbCheck() {
 }
 
 func database() *mongo.Database {
-	dbName := utils.GetConfStr("database.name")
+	dbName := common.GetConfStr("database.name")
 	db := client.Database(dbName)
 	return db
 }

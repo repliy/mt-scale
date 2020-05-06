@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"errors"
+	"mt-scale/common"
 	"mt-scale/utils"
 	"net/http"
 	"time"
@@ -44,7 +45,7 @@ type Options struct {
 }
 
 func init() {
-	ignoreURL = utils.GetConfArr("service.ignoreurl")
+	ignoreURL = common.GetConfArr("service.ignoreurl")
 }
 
 // Middleware validates JWT token.
@@ -120,7 +121,7 @@ func Middleware(options Options) gin.HandlerFunc {
 func getTokenString(user User) string {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
-	if exp := utils.GetConfInt("jwt.token.exp"); exp > 0 {
+	if exp := common.GetConfInt("jwt.token.exp"); exp > 0 {
 		tokenExp = exp
 	}
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenExp)).Unix()

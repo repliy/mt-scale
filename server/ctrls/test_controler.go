@@ -1,7 +1,7 @@
 package ctrls
 
 import (
-	"mt-scale/utils"
+	"mt-scale/common"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 //Redis测试
 func RedisSetAction(ctx *gin.Context) {
 
-	rds := utils.CreateRedisPool().Get()
+	rds := common.CreateRedisPool().Get()
 
 	count, _ := redis.Int(rds.Do("GET", "count"))
 	count++

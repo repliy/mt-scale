@@ -20,7 +20,7 @@ var statusText = map[int]string{
 // MtException Mt server internal exception struct
 type MtException struct {
 	HTTPCode  int    `json:"-"`
-	ErrorCode int    `json:"error_code"`
+	ErrorCode int    `json:"code"`
 	Msg       string `json:"msg"`
 }
 
