@@ -2,6 +2,7 @@ package route
 
 import (
 	"mt-scale/ctrls"
+	"mt-scale/exception"
 	"mt-scale/middleware/jwt"
 	"mt-scale/utils"
 	"net/http"
@@ -12,6 +13,36 @@ import (
 
 // Router Gin router
 var Router *gin.Engine
+
+// ResultHandlerFunc Controller return result data handler
+type ResultHandlerFunc func(c *gin.Context) (interface{}, error)
+
+// ResultData Http request return data struct
+type ResultData struct {
+	data string
+	code string
+	msg  string
+}
+
+func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		_, err := handler(c)
+
+		var mtException *exception.MtException
+
+		if err != nil {
+			if h, ok := err.(*exception.MtException); ok {
+				mtException = h
+			} else if e, ok := err.(error); ok {
+				mtException = exception.UnknownError(e.Error())
+			} else {
+				mtException = exception.ServerError()
+			}
+			c.JSON(mtException.HTTPCode, mtException)
+			return
+		}
+	}
+}
 
 func init() {
 	Router = gin.Default()
@@ -49,7 +80,7 @@ func SetupRouter() *gin.Engine {
 
 	// order paths
 	orderRouter := Router.Group("/order")
-	orderRouter.GET("/list", ctrls.GetOrderList)
+	orderRouter.GET("/list", wrapper(ctrls.GetOrderList))
 
 	return Router
 }
