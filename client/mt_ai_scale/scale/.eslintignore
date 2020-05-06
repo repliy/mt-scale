@@ -1,0 +1,5 @@
+dist/*.js
+src/assets
+node_modules/**
+../ssd_scale
+src/utils/**
