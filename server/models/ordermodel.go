@@ -2,7 +2,9 @@ package models
 
 import (
 	"fmt"
+	"mt-scale/common"
 	"mt-scale/entitys"
+	"mt-scale/exception"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -24,6 +26,8 @@ func FetchOrder() []entitys.Order {
 
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 
 	// invList := make(list[string])

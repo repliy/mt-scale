@@ -1,14 +1,14 @@
 package ctrls
 
 import (
-	"mt-scale/exception"
+	"mt-scale/common"
 	"mt-scale/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 // GetOrderList Get order list
-func GetOrderList(ctx *gin.Context) (interface{}, error) {
+func GetOrderList(ctx *gin.Context) *common.ResultData {
 	orderList := models.FetchOrder()
-	return orderList, exception.BusinessError()
+	return common.RetData(orderList)
 }

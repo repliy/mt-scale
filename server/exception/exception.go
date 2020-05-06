@@ -1,21 +1,12 @@
 package exception
 
 import (
+	"mt-scale/common"
+	"mt-scale/syslog"
 	"net/http"
-)
 
-const (
-	// logicErrorCode Server internal exception code
-	businessErrorCode = 200101
-	unknownErrorCode  = 200102
-	serverErrorCode   = 200103
+	"github.com/gin-gonic/gin"
 )
-
-var statusText = map[int]string{
-	businessErrorCode: "Mt Internal System Error ...",
-	unknownErrorCode:  "",
-	serverErrorCode:   "",
-}
 
 // MtException Mt server internal exception struct
 type MtException struct {
@@ -24,34 +15,58 @@ type MtException struct {
 	Msg       string `json:"msg"`
 }
 
+// MiddleWare Gin panic middleware
+func MiddleWare() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if err := recover(); err != nil {
+				var mtException *MtException
+
+				if h, ok := err.(*MtException); ok {
+					mtException = h
+				} else if e, ok := err.(error); ok {
+					mtException = unknownError(e.Error())
+				} else {
+					mtException = serverError()
+				}
+
+				c.JSON(mtException.HTTPCode, mtException)
+				syslog.Error(mtException.ErrorCode, mtException.Msg)
+				c.Done()
+			}
+		}()
+		c.Next()
+	}
+}
+
 // Error Implement error interface
 func (e *MtException) Error() string {
 	return e.Msg
 }
 
-// BusinessError Internal business system exception
-func BusinessError() *MtException {
-	return &MtException{
+// ThrowBusinessError Internal business system exception
+func ThrowBusinessError(code int) {
+	msg := common.StatusText(code)
+	err := &MtException{
 		HTTPCode:  http.StatusOK,
-		ErrorCode: businessErrorCode,
-		Msg:       statusText[businessErrorCode],
+		ErrorCode: code,
+		Msg:       msg,
 	}
+	panic(err)
 }
 
-// UnknownError Non-internal system exception
-func UnknownError(message string) *MtException {
+func unknownError(message string) *MtException {
 	return &MtException{
 		HTTPCode:  http.StatusForbidden,
-		ErrorCode: unknownErrorCode,
+		ErrorCode: common.UnknownErrorCode,
 		Msg:       message,
 	}
 }
 
-// ServerError Other system exception
-func ServerError() *MtException {
+func serverError() *MtException {
 	return &MtException{
 		HTTPCode:  http.StatusInternalServerError,
-		ErrorCode: serverErrorCode,
+		ErrorCode: common.ServerErrorCode,
 		Msg:       http.StatusText(http.StatusInternalServerError),
 	}
 }
