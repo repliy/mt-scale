@@ -22,9 +22,10 @@ var (
 func init() {
 	syslog.Debug("Init mongoDB")
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	url := common.GetConfStr("database.url")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
+	url := common.GetConfStr("database.url")
 	clientOptions := options.Client().ApplyURI(url)
 	clientOptions.TLSConfig = &tls.Config{}
 	tlsCfg := clientOptions.TLSConfig
