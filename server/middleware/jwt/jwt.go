@@ -3,8 +3,8 @@ package jwt
 import (
 	"mt-scale/common"
 	"mt-scale/exception"
+	"mt-scale/syslog"
 	"mt-scale/utils"
-	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,8 +13,8 @@ import (
 
 var (
 	ignoreURL        []string
-	defaultErrorFunc = func(c *gin.Context) {
-		exception.ThrowBusinessError(common.JWTAuthFailedCode)
+	defaultErrorFunc = func(code int) {
+		exception.ThrowBusinessError(code)
 	}
 	tokenExp int = 48
 )
@@ -41,7 +41,6 @@ type User struct {
 // Options stores configurations for a JWT middleware.
 type Options struct {
 	ignoreURL []string
-	ErrorFunc gin.HandlerFunc
 }
 
 func init() {
@@ -57,11 +56,6 @@ func Middleware(options Options) gin.HandlerFunc {
 		}
 	}
 
-	errorFunc := options.ErrorFunc
-	if errorFunc == nil {
-		errorFunc = defaultErrorFunc
-	}
-
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
 		if _, f := utils.Find(ignoreURL, path); f {
@@ -69,12 +63,11 @@ func Middleware(options Options) gin.HandlerFunc {
 		}
 		claim := getClaim(c)
 		if claim == nil {
-			return
+			defaultErrorFunc(common.JWTAuthFailedCode)
 		}
 		exp := claim["exp"]
 		if exp == nil || exp.(float64) < float64(time.Now().Unix()) {
-			exception.ThrowBusinessError(common.TokenExpiredCode)
-			return
+			defaultErrorFunc(common.TokenExpiredCode)
 		}
 
 		email := ""
@@ -146,11 +139,10 @@ func getClaim(c *gin.Context) jwt.MapClaims {
 	// log.Debug(tokenString)
 
 	if len(tokenString) < 15 {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Message": "Unauthorized"})
 		return nil
 	}
 
-	// log.Debug(tokenString[7:])
+	syslog.Info(tokenString[7:])
 	tokenString = tokenString[7:]
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -158,14 +150,13 @@ func getClaim(c *gin.Context) jwt.MapClaims {
 	})
 
 	if err != nil {
-		// log.Debug(err)
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Message": "Unauthorized"})
 		return nil
 	}
 
 	claim, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		// log.Error(ok)
+		return nil
 	}
+
 	return claim
 }

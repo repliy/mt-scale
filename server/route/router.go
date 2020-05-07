@@ -47,10 +47,10 @@ func init() {
 	config.ExposeHeaders = []string{"jwt"}
 
 	Router.Use(cors.New(config))
+	// exception middleware need to before others
+	Router.Use(exception.MiddleWare())
 
 	Router.Use(jwt.Middleware(jwt.Options{}))
-
-	Router.Use(exception.MiddleWare())
 }
 
 // SetupRouter Setup path
