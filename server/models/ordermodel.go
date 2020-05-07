@@ -25,9 +25,7 @@ func FetchOrder() []entitys.Order {
 	}})
 
 	if err != nil {
-		fmt.Println(err)
-	} else {
-		exception.ThrowBusinessError(common.JSONFormatErrorCode)
+		exception.ThrowBusinessError(common.DatabaseQueryErrorCode)
 	}
 
 	// invList := make(list[string])

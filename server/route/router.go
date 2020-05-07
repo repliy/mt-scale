@@ -14,13 +14,27 @@ import (
 // Router Gin router
 var Router *gin.Engine
 
+// ResultData Http request return data struct
+type ResultData struct {
+	HTTPCode int         `json:"-"`
+	Data     interface{} `json:"data"`
+	Code     int         `json:"code"`
+	Msg      string      `json:"msg"`
+}
+
 // ResultHandlerFunc Controller return result data handler
-type ResultHandlerFunc func(c *gin.Context) *common.ResultData
+type ResultHandlerFunc func(c *gin.Context) interface{}
 
 func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		result := handler(c)
-		c.JSON(result.HTTPCode, result)
+		retData := &ResultData{
+			HTTPCode: http.StatusOK,
+			Data:     result,
+			Code:     common.BusinessSuccessCode,
+			Msg:      common.StatusText(common.BusinessSuccessCode),
+		}
+		c.JSON(retData.HTTPCode, retData)
 	}
 }
 

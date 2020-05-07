@@ -32,7 +32,7 @@ func MiddleWare() gin.HandlerFunc {
 
 				c.JSON(mtException.HTTPCode, mtException)
 				syslog.Error(mtException.ErrorCode, mtException.Msg)
-				c.Done()
+				c.Abort()
 			}
 		}()
 		c.Next()

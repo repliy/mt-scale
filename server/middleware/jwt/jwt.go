@@ -1,8 +1,8 @@
 package jwt
 
 import (
-	"errors"
 	"mt-scale/common"
+	"mt-scale/exception"
 	"mt-scale/utils"
 	"net/http"
 	"time"
@@ -14,7 +14,7 @@ import (
 var (
 	ignoreURL        []string
 	defaultErrorFunc = func(c *gin.Context) {
-		panic(errors.New(">>>>>> :jwt token mismatch"))
+		exception.ThrowBusinessError(common.JWTAuthFailedCode)
 	}
 	tokenExp int = 48
 )
@@ -73,8 +73,7 @@ func Middleware(options Options) gin.HandlerFunc {
 		}
 		exp := claim["exp"]
 		if exp == nil || exp.(float64) < float64(time.Now().Unix()) {
-			// log.Info("token expired, redirect to login")
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"Message": "Login expired, login again."})
+			exception.ThrowBusinessError(common.TokenExpiredCode)
 			return
 		}
 
