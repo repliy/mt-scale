@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- <v-app-bar app color="primary" dark>
+    <v-app-bar app color="primary" dark>
       <v-btn @click="toggleDrawer" target="_blank" text>
         <span class="mr-2">Latest Release</span>
         <v-icon>mdi-open-in-new</v-icon>
@@ -13,8 +13,7 @@
 
     <v-content style="height: calc(100vh - 64px);margin-top: 64px;" class="green">
       <router-view />
-    </v-content> -->
-    <router-view />
+    </v-content>
   </v-app>
 </template>
 

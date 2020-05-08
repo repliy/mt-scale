@@ -5,7 +5,7 @@
     </v-row>
     <v-row class="pink">
       <v-col class="blue" cols="3">
-        <RecordList />
+        <RecordTab />
       </v-col>
       <v-col cols="9"></v-col>
     </v-row>
@@ -14,13 +14,13 @@
 <script>
 // @ is an alias to /src
 import RecordStatistics from '@/components/RecordStatistics.vue'
-import RecordList from '@/components/RecordList.vue'
+import RecordTab from '@/components/RecordTab.vue'
 
 export default {
   name: 'Recording',
   components: {
     RecordStatistics,
-    RecordList
+    RecordTab
   },
   methods: {},
 }
