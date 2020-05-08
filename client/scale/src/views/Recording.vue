@@ -7,20 +7,23 @@
       <v-col class="blue" cols="3">
         <RecordTab />
       </v-col>
-      <v-col cols="9"></v-col>
+      <v-col cols="9">
+        <Weight />
+      </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
-// @ is an alias to /src
-import RecordStatistics from '@/components/RecordStatistics.vue'
-import RecordTab from '@/components/RecordTab.vue'
+import RecordStatistics from '@/components/recording/RecordStatistics.vue'
+import RecordTab from '@/components/recording/RecordTab.vue'
+import Weight from '@/components/recording/Weight.vue'
 
 export default {
   name: 'Recording',
   components: {
     RecordStatistics,
-    RecordTab
+    RecordTab,
+    Weight
   },
   methods: {},
 }
