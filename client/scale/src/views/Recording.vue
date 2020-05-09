@@ -1,17 +1,19 @@
 <template>
-  <v-container fluid class=" grey lighten-5">
-    <v-row class="red">
+  <div style="height: 100%;" fluid class="grey lighten-4">
+    <div>
       <RecordStatistics />
-    </v-row>
-    <v-row class="pink">
-      <v-col class="blue" cols="3">
-        <RecordTab />
-      </v-col>
-      <v-col cols="9">
-        <Weight />
-      </v-col>
-    </v-row>
-  </v-container>
+    </div>
+    <div>
+      <v-row class="pink">
+        <v-col class="blue" cols="3">
+          <RecordTab />
+        </v-col>
+        <v-col cols="9">
+          <Weight />
+        </v-col>
+      </v-row>
+    </div>
+  </div>
 </template>
 <script>
 import RecordStatistics from '@/components/recording/RecordStatistics.vue'
@@ -28,3 +30,5 @@ export default {
   methods: {},
 }
 </script>
+<style scoped>
+</style>

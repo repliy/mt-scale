@@ -11,7 +11,7 @@
       </div>
     </v-app-bar>
 
-    <v-content style="height: calc(100vh - 64px);margin-top: 64px;" class="green">
+    <v-content>
       <router-view />
     </v-content>
   </v-app>
