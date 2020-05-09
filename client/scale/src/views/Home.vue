@@ -18,7 +18,7 @@ export default {
     AiScale,
   },
   methods: {
-    goRecording() {
+    goRecording () {
       this.$router.push({ name: 'Recording' })
     },
   },
