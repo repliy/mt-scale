@@ -13,7 +13,7 @@ module.exports = {
     // 'plugin:vue/recommended', 
     // 'eslint:recommended',
     'plugin:vue/essential',
-    'standard'
+    '@vue/standard'
   ],
   plugins: ['vue'],
   // add your custom rules here
