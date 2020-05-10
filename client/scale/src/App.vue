@@ -11,8 +11,8 @@
       </div>
     </v-app-bar>
 
-    <v-content>
-      <router-view />
+    <v-content >
+      <router-view class="pg-height"></router-view>
     </v-content>
   </v-app>
 </template>
@@ -24,12 +24,17 @@ export default {
   components: {},
 
   data: () => ({
-    drawerModel: null,
+    drawerModel: null
   }),
   methods: {
-    toggleDrawer () {
+    toggleDrawer() {
       this.drawerModel = !this.drawerModel
-    },
-  },
+    }
+  }
 }
 </script>
+<style scoped>
+.pg-height {
+  height: calc(100vh - 4px);
+}
+</style>

@@ -1,14 +1,14 @@
 <template>
-  <div style="height: 100%;" fluid class="grey lighten-4">
-    <div>
+  <div fluid class="grey lighten-4 pg-height">
+    <div class="top-height">
       <RecordStatistics />
     </div>
-    <div>
-      <v-row class="pink">
-        <v-col class="blue" cols="3">
+    <div class="mt-2 bottom-height">
+      <v-row align="stretch" justify="space-between" style="height: 100%;">
+        <v-col cols="4">
           <RecordTab />
         </v-col>
-        <v-col cols="9">
+        <v-col cols="8">
           <Weight />
         </v-col>
       </v-row>
@@ -27,8 +27,17 @@ export default {
     RecordTab,
     Weight
   },
-  methods: {},
+  methods: {}
 }
 </script>
 <style scoped>
+.pg-height {
+  height: calc(100vh - 64px);
+}
+.top-height {
+  height: 25vh;
+}
+.bottom-height {
+  height: calc(74vh - 64px);
+}
 </style>

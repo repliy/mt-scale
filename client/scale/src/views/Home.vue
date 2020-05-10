@@ -10,17 +10,17 @@
 </template>
 
 <script>
-import AiScale from '@/components/AiScale.vue'
+// import AiScale from '@/components/AiScale.vue'
 
 export default {
   name: 'Home',
   components: {
-    AiScale,
+    // AiScale
   },
   methods: {
-    goRecording () {
+    goRecording() {
       this.$router.push({ name: 'Recording' })
-    },
-  },
+    }
+  }
 }
 </script>
