@@ -33,7 +33,7 @@
         <v-card
           @click="switchCard"
           v-if="speciesShow"
-          class="mx-auto"
+          class="mx-auto top-height"
           tile
         >
           <div class="weight-tag-font">物种</div>
@@ -82,7 +82,7 @@
         <v-card
           @click="switchCard"
           v-else
-          class="mx-auto"
+          class="mx-auto top-height"
           tile
         >
           <div class="weight-tag-font">箱子</div>
@@ -169,5 +169,8 @@ export default {
 .species-color-tag {
   height: 12px;
   font-size: 6px;
+}
+.top-height {
+  height: 25vh;
 }
 </style>

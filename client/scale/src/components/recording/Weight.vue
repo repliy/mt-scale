@@ -75,7 +75,7 @@
                 <v-col cols="3">
                   <v-icon
                     class="d-inline"
-                    :color="red"
+                    color="red"
                   >mdi-label</v-icon>
                 </v-col>
                 <v-col>
