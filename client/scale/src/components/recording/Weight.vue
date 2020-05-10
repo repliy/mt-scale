@@ -17,7 +17,7 @@
           <p class="d-inline tag_font">当前重量: </p>
         </v-col>
         <v-col class="pl-0">
-          <input class="weight_input" />
+          <input readonly class="weight_input" />
           <v-divider darkr></v-divider>
         </v-col>
         <v-col>
