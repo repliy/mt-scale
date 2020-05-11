@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"log"
+	"mt-scale/exception"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -12,21 +13,23 @@ import (
 var validate *validator.Validate
 
 // ValidateStructParams Validate params of struct
-func ValidateStructParams(obj interface{}) error {
+func ValidateStructParams(obj interface{}) {
 	if validate == nil {
 		validate = validator.New()
 	}
-	err := validate.Struct(obj)
-	return err
+	if err := validate.Struct(obj); err != nil {
+		exception.ThrowBusinessErrorMsg(err.Error())
+	}
 }
 
 // ValidateVarParams Validate var param
-func ValidateVarParams(obj interface{}, reg string) error {
+func ValidateVarParams(obj interface{}, reg string) {
 	if validate == nil {
 		validate = validator.New()
 	}
-	err := validate.Var(obj, reg)
-	return err
+	if err := validate.Var(obj, reg); err != nil {
+		exception.ThrowBusinessErrorMsg(err.Error())
+	}
 }
 
 // Find takes a slice and looks for an element in it. If found it will

@@ -18,9 +18,8 @@ func CreateBox(ctx *gin.Context) interface{} {
 	if err := ctx.ShouldBindJSON(&box); err != nil {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
-	if err := utils.ValidateStructParams(box); err != nil {
-		exception.ThrowBusinessErrorMsg(err.Error())
-	}
+	utils.ValidateStructParams(box)
+
 	timeNow := time.Now()
 	box.CreateTime = timeNow
 	box.UpdateTime = timeNow
@@ -32,12 +31,10 @@ func CreateBox(ctx *gin.Context) interface{} {
 // GetBoxByType Query a new box
 func GetBoxByType(ctx *gin.Context) interface{} {
 	var param dto.QueryBoxDto
-	if err := ctx.ShouldBindJSON(&param); err != nil {
+	if err := ctx.ShouldBindQuery(&param); err != nil {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
-	if err := utils.ValidateStructParams(param); err != nil {
-		exception.ThrowBusinessErrorMsg(err.Error())
-	}
+	utils.ValidateStructParams(param)
 
 	return models.FetchBoxes(param.BoxType)
 }
