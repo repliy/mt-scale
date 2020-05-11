@@ -47,6 +47,10 @@ func FetchBoxes(boxType string) []entitys.Box {
 				"type":   boxType,
 			},
 		},
+		{"$sort": bson.M{
+			"num": -1,
+		},
+		},
 	}
 	cur, err := col.Aggregate(ctx, filter)
 	if err != nil {
