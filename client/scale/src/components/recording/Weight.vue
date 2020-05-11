@@ -103,7 +103,7 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-            v-model="message"
+            v-model="speceiesTag"
             clearable
             label="请输入Tag编号"
             type="text"
@@ -168,6 +168,7 @@ export default {
     dialog: false,
     boxType: '大号',
     boxTag: '#999',
+    speceiesTag: '',
     index: 69,
     weight: 352
   }),

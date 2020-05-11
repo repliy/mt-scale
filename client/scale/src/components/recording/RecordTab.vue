@@ -12,14 +12,14 @@
     item-key="name"
     calculate-widths
   >
-    <template v-slot:expanded-item="{ headers, item }">
+    <template v-slot:expanded-item="{ item }">
       <td :colspan="100">
         <v-row>
           <v-col>
-            <v-btn tile block class="d-inline pa-2 deep-purple white--text">编辑</v-btn>
+            <v-btn tile block class="d-inline pa-2 deep-purple white--text" @click="itemEdit(item)">编辑</v-btn>
           </v-col>
           <v-col>
-            <v-btn tile block class="d-inline pa-2 red white--text">删除</v-btn>
+            <v-btn tile block class="d-inline pa-2 red white--text" @click="itemDel(item)">删除</v-btn>
           </v-col>
         </v-row>
       </td>
@@ -96,6 +96,12 @@ export default {
     },
     getColor(name) {
       return 'red'
+    },
+    itemEdit(item) {
+      console.log('item del index', item.index)
+    },
+    itemDel(item) {
+
     }
   }
 }

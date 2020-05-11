@@ -1,10 +1,18 @@
 <template>
-  <div fluid class="grey lighten-4 pg-height">
-    <div class="top-height">
+  <div
+    fluid
+    class="grey lighten-4 pg-height"
+  >
+    <div fluid class="top-height">
       <RecordStatistics />
     </div>
     <div class="mt-2 bottom-height">
-      <v-row align="stretch" justify="space-between" style="height: 100%;">
+      <v-row
+        align="stretch"
+        justify="space-between"
+        style="height: 100%;"
+        class="ma-0"
+      >
         <v-col cols="4">
           <RecordTab />
         </v-col>

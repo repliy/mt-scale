@@ -1,10 +1,8 @@
 <template>
   <div class="ma-0">
-    <v-row align="center">
+    <v-row align="center" class="ma-0">
       <v-col cols="3">
         <v-card
-          class="mx-auto"
-          max-width="200"
           tile
         >
           <v-card-text>
