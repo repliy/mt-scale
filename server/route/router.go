@@ -73,5 +73,10 @@ func SetupRouter() *gin.Engine {
 	orderRouter := Router.Group("/order")
 	orderRouter.GET("/list", wrapper(ctrls.GetOrderList))
 
+	// box
+	boxRouter := Router.Group("/box")
+	boxRouter.POST("/crt", wrapper(ctrls.CreateBox))
+	boxRouter.GET("/fetchbytype", wrapper(ctrls.GetBoxByType))
+
 	return Router
 }

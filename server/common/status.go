@@ -5,12 +5,14 @@ const (
 	BusinessSuccessCode = 200000
 	// BusinessErrorCode internal exception
 	BusinessErrorCode = 200101
-	// JSONFormatErrorCode json marshl or unmarshl exception
+	// JSONFormatErrorCode json marshl or unmarshl
 	JSONFormatErrorCode = 200102
 	// UnknownErrorCode Common exception
 	UnknownErrorCode = 200201
-	// DatabaseQueryErrorCode Fetch data from database exception
+	// DatabaseQueryErrorCode Fetch data from database
 	DatabaseQueryErrorCode = 200202
+	// ValidateParamsErrorCode Request parameters validate
+	ValidateParamsErrorCode = 200203
 	// JWTAuthFailedCode token mismatch
 	JWTAuthFailedCode = 200401
 	// TokenExpiredCode token expired
@@ -20,14 +22,15 @@ const (
 )
 
 var statusText = map[int]string{
-	BusinessErrorCode:      "Mt internal system error ...",
-	UnknownErrorCode:       "Mt Unknown Error",
-	ServerErrorCode:        "Mt Server Error",
-	BusinessSuccessCode:    "success",
-	JSONFormatErrorCode:    "Mt json data format error",
-	JWTAuthFailedCode:      "User authentication failure",
-	TokenExpiredCode:       "Login expired, login again.",
-	DatabaseQueryErrorCode: "Fetch data from database failed",
+	BusinessErrorCode:       "Mt internal system error ...",
+	UnknownErrorCode:        "Mt Unknown Error",
+	ServerErrorCode:         "Mt Server Error",
+	BusinessSuccessCode:     "success",
+	JSONFormatErrorCode:     "Mt json data format error",
+	JWTAuthFailedCode:       "User authentication failure",
+	TokenExpiredCode:        "Login expired, login again.",
+	DatabaseQueryErrorCode:  "Fetch data from database failed",
+	ValidateParamsErrorCode: "Validate params error",
 }
 
 // StatusText returns a text for the business status code. It returns the empty

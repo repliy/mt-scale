@@ -1,6 +1,7 @@
 database:
   url: mongodb://dev:hfxdev@portal.marinethinking.ai:27017,portal-test.marinethinking.ai:27017/admin?replicaSet=rs0&ssl=true
-  name: lobster_test
+  #name: lobster_test
+  name: ssr_test
 
 redis:
   host: 127.0.0.1:6379
@@ -15,6 +16,8 @@ service:
   port: :8083
   ignoreurl:
     - /order/list
+    - /box/crt
+    - /box/fetchbytype
     - /favicon.ico
 
 router:

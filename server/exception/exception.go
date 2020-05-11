@@ -55,6 +55,16 @@ func ThrowBusinessError(code int) {
 	panic(err)
 }
 
+// ThrowBusinessErrorMsg Throw exception with custom message
+func ThrowBusinessErrorMsg(messgae string) {
+	err := &MtException{
+		HTTPCode:  http.StatusOK,
+		ErrorCode: common.BusinessErrorCode,
+		Msg:       messgae,
+	}
+	panic(err)
+}
+
 func unknownError(message string) *MtException {
 	return &MtException{
 		HTTPCode:  http.StatusForbidden,

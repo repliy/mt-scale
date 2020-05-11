@@ -43,14 +43,9 @@ func init() {
 
 // MongoDbCheck Check mongo database connect.
 func MongoDbCheck() {
-	checkCount++
-	syslog.Debug("Check mongo database times", checkCount)
-
 	if client != nil {
 		if err := client.Ping(context.TODO(), nil); err != nil {
 			syslog.Error("Database error.", err)
-		} else {
-			syslog.Debug("Database is ok.")
 		}
 	} else {
 		syslog.Error("Mongo database client is nil .")
