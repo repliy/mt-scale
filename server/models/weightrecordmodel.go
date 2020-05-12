@@ -93,7 +93,7 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []entitys.WeightRecord {
 	limit := int64(pageSize)
 	skip := int64((pageNum - 1) * pageSize)
 	sortMap := make(map[string]interface{})
-	sortMap["timestamp"] = -1
+	sortMap["create_time"] = -1
 	opts.Sort = sortMap
 	opts.Limit = &limit
 	opts.Skip = &skip
