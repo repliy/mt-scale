@@ -83,5 +83,9 @@ func SetupRouter() *gin.Engine {
 	speciesRouter.POST("/crt", wrapper(ctrls.CreateSpecies))
 	speciesRouter.GET("/fetchall", wrapper(ctrls.GetAllSpecies))
 
+	// record
+	recordRouter := Router.Group("/record")
+	recordRouter.POST("/add", wrapper(ctrls.AddWeightRecord))
+
 	return Router
 }

@@ -53,7 +53,7 @@ func FetchAllSpeciesInfo() []entitys.Species {
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
 	var result []entitys.Species
-	if cur.Next(ctx) {
+	for cur.Next(ctx) {
 		var row entitys.Species
 		if err := cur.Decode(&row); err != nil {
 			syslog.Error(err)

@@ -20,6 +20,7 @@ service:
     - /box/fetchbytype
     - /species/crt
     - /species/fetchall
+    - /record/add
     - /favicon.ico
 
 router:

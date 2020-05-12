@@ -18,8 +18,7 @@ func CreateBox(ctx *gin.Context) interface{} {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 	utils.ValidateStructParams(box)
-	boxID := models.AddBox(box)
-	return boxID
+	return models.AddBox(box)
 }
 
 // GetBoxByType Query a new box
@@ -29,6 +28,5 @@ func GetBoxByType(ctx *gin.Context) interface{} {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 	utils.ValidateStructParams(param)
-
 	return models.FetchBoxes(param.BoxType)
 }
