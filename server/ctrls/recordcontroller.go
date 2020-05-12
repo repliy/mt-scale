@@ -32,3 +32,8 @@ func GetWeightRecord(ctx *gin.Context) interface{} {
 	}
 	return models.FetchWeightRecord(params)
 }
+
+// StatWeightRecord path:/record/stat
+func StatWeightRecord(ctx *gin.Context) interface{} {
+	return models.StatSpecieszWeight()
+}

@@ -9,7 +9,7 @@ import (
 // WeightRecordVo weight page display
 type WeightRecordVo struct {
 	ID      primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Weight  string             `json:"weight"`
+	Weight  float32            `json:"weight"`
 	Species []entitys.Species  `bson:",omitempty" json:"species"`
 	Index   int                `json:"index"`
 }

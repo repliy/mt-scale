@@ -22,6 +22,7 @@ service:
     - /species/fetchall
     - /record/crt
     - /record/fetch
+    - /record/stat
     - /favicon.ico
 
 router:

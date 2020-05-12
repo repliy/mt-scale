@@ -139,3 +139,53 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 	}
 	return result
 }
+
+// StatSpecieszWeight Statistical weighing record
+func StatSpecieszWeight() []vo.StatSpecWeightVo {
+	col, ctx := Collection("species")
+	filter := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "weightrecord",
+				"localField":   "_id",
+				"foreignField": "species_id",
+				"as":           "weights",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$weights",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$_id",
+				"name": bson.M{
+					"$first": "$name",
+				},
+				"tag": bson.M{
+					"$first": "$tag",
+				},
+				"weight": bson.M{
+					"$sum": "$weights.weight",
+				},
+			},
+		},
+	}
+	cur, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var result []vo.StatSpecWeightVo
+	for cur.Next(ctx) {
+		var row vo.StatSpecWeightVo
+		if err := cur.Decode(&row); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		result = append(result, row)
+	}
+	return result
+}

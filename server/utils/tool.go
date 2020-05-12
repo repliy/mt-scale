@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"log"
 	"mt-scale/exception"
+	"mt-scale/syslog"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -18,6 +19,7 @@ func ValidateStructParams(obj interface{}) {
 		validate = validator.New()
 	}
 	if err := validate.Struct(obj); err != nil {
+		syslog.Error(err)
 		exception.ThrowBusinessErrorMsg(err.Error())
 	}
 }
