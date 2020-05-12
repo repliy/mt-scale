@@ -5,12 +5,12 @@ import (
 	"mt-scale/entitys"
 	"mt-scale/exception"
 	"mt-scale/models/dto"
+	"mt-scale/models/vo"
 	"mt-scale/syslog"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // AddWeightRecord record weight one time
@@ -66,7 +66,7 @@ func UpdWeightRecord(record entitys.WeightRecord) primitive.ObjectID {
 }
 
 // FetchWeightRecord fetch weight record by conditions
-func FetchWeightRecord(dto dto.QueryRecordDto) []entitys.WeightRecord {
+func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 	col, ctx := Collection("weightrecord")
 	pageNum := dto.PageNum
 	if pageNum == 0 {
@@ -76,36 +76,61 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []entitys.WeightRecord {
 	if pageSize == 0 {
 		pageSize = 10
 	}
-	filter := bson.D{}
-	if dto.BoxID != "" {
-		objID, _ := primitive.ObjectIDFromHex(dto.BoxID)
-		filter = append(filter, primitive.E{Key: "box_id", Value: objID})
-	}
-	if dto.SpeciesID != "" {
-		specID, _ := primitive.ObjectIDFromHex(dto.SpeciesID)
-		filter = append(filter, primitive.E{Key: "species_id", Value: specID})
-	}
-	if dto.Index != 0 {
-		filter = append(filter, primitive.E{Key: "index", Value: dto.Index})
-	}
-	// find opitons
-	opts := new(options.FindOptions)
 	limit := int64(pageSize)
 	skip := int64((pageNum - 1) * pageSize)
-	sortMap := make(map[string]interface{})
-	sortMap["create_time"] = -1
-	opts.Sort = sortMap
-	opts.Limit = &limit
-	opts.Skip = &skip
+	filter := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "species",
+				"localField":   "species_id",
+				"foreignField": "_id",
+				"as":           "species",
+			},
+		},
+		{
+			"$sort": bson.M{
+				"index": -1,
+			},
+		},
+		{
+			"$skip": skip,
+		},
+		{
+			"$limit": limit,
+		},
+	}
+	if dto.BoxID != "" {
+		boxBsonID, _ := primitive.ObjectIDFromHex(dto.BoxID)
+		filter = append(filter, primitive.M{
+			"$match": primitive.M{
+				"box_id": boxBsonID,
+			},
+		})
+	}
+	if dto.SpeciesID != "" {
+		specBsonID, _ := primitive.ObjectIDFromHex(dto.SpeciesID)
+		filter = append(filter, primitive.M{
+			"$match": primitive.M{
+				"species_id": specBsonID,
+			},
+		})
+	}
+	if dto.Index != 0 {
+		filter = append(filter, primitive.M{
+			"$match": primitive.M{
+				"index": dto.Index,
+			},
+		})
+	}
 
-	cur, err := col.Find(ctx, filter, opts)
+	cur, err := col.Aggregate(ctx, filter)
 	if err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	var result []entitys.WeightRecord
+	var result []vo.WeightRecordVo
 	for cur.Next(ctx) {
-		var row entitys.WeightRecord
+		var row vo.WeightRecordVo
 		if err := cur.Decode(&row); err != nil {
 			syslog.Error(err)
 			exception.ThrowBusinessError(common.DatabaseErrorCode)
