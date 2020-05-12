@@ -7,7 +7,6 @@ import (
 	"mt-scale/models"
 	"mt-scale/models/dto"
 	"mt-scale/utils"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,11 +18,6 @@ func CreateBox(ctx *gin.Context) interface{} {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 	utils.ValidateStructParams(box)
-
-	timeNow := time.Now()
-	box.CreateTime = timeNow
-	box.UpdateTime = timeNow
-
 	boxID := models.AddBox(box)
 	return boxID
 }

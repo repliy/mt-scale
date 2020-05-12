@@ -18,6 +18,8 @@ service:
     - /order/list
     - /box/crt
     - /box/fetchbytype
+    - /species/crt
+    - /species/fetchall
     - /favicon.ico
 
 router:
