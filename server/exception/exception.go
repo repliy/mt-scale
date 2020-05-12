@@ -2,7 +2,6 @@ package exception
 
 import (
 	"mt-scale/common"
-	"mt-scale/syslog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,6 @@ func MiddleWare() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				var mtException *MtException
-
 				if h, ok := err.(*MtException); ok {
 					mtException = h
 				} else if e, ok := err.(error); ok {
@@ -29,9 +27,7 @@ func MiddleWare() gin.HandlerFunc {
 				} else {
 					mtException = serverError()
 				}
-
 				c.JSON(mtException.HTTPCode, mtException)
-				syslog.Error(mtException.ErrorCode, mtException.Msg)
 				c.Abort()
 			}
 		}()

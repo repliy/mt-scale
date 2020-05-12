@@ -20,7 +20,8 @@ service:
     - /box/fetchbytype
     - /species/crt
     - /species/fetchall
-    - /record/add
+    - /record/crt
+    - /record/fetch
     - /favicon.ico
 
 router:

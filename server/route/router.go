@@ -69,10 +69,6 @@ func SetupRouter() *gin.Engine {
 		ctx.HTML(http.StatusNotFound, "404.html", "")
 	})
 
-	// order paths
-	orderRouter := Router.Group("/order")
-	orderRouter.GET("/list", wrapper(ctrls.GetOrderList))
-
 	// box
 	boxRouter := Router.Group("/box")
 	boxRouter.POST("/crt", wrapper(ctrls.CreateBox))
@@ -85,7 +81,8 @@ func SetupRouter() *gin.Engine {
 
 	// record
 	recordRouter := Router.Group("/record")
-	recordRouter.POST("/add", wrapper(ctrls.AddWeightRecord))
+	recordRouter.POST("/crt", wrapper(ctrls.AddWeightRecord))
+	recordRouter.GET("/fetch", wrapper(ctrls.GetWeightRecord))
 
 	return Router
 }
