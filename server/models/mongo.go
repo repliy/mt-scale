@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"crypto/tls"
 	"log"
 	"time"
 
@@ -27,9 +26,9 @@ func init() {
 
 	url := common.GetConfStr("database.url")
 	clientOptions := options.Client().ApplyURI(url)
-	clientOptions.TLSConfig = &tls.Config{}
-	tlsCfg := clientOptions.TLSConfig
-	tlsCfg.InsecureSkipVerify = true
+	// clientOptions.TLSConfig = &tls.Config{}
+	// tlsCfg := clientOptions.TLSConfig
+	// tlsCfg.InsecureSkipVerify = true
 
 	var err error
 	client, err = mongo.Connect(ctx, clientOptions)

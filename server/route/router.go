@@ -5,7 +5,9 @@ import (
 	"mt-scale/ctrls"
 	"mt-scale/exception"
 	"mt-scale/middleware/jwt"
+	"mt-scale/syslog"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -27,6 +29,7 @@ type ResultHandlerFunc func(c *gin.Context) interface{}
 
 func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		syslog.Debug("request start:", time.Now())
 		result := handler(c)
 		retData := &ResultData{
 			HTTPCode: http.StatusOK,
@@ -34,6 +37,7 @@ func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 			Code:     common.BusinessSuccessCode,
 			Msg:      common.StatusText(common.BusinessSuccessCode),
 		}
+		syslog.Debug("request end:", time.Now())
 		c.JSON(retData.HTTPCode, retData)
 	}
 }
@@ -55,7 +59,6 @@ func init() {
 
 // SetupRouter Setup path
 func SetupRouter() *gin.Engine {
-
 	// static
 	staticPath := common.GetConfStr("router.static")
 	Router.Static("/static", staticPath)
@@ -73,11 +76,16 @@ func SetupRouter() *gin.Engine {
 	boxRouter := Router.Group("/box")
 	boxRouter.POST("/crt", wrapper(ctrls.CreateBox))
 	boxRouter.GET("/fetchbytype", wrapper(ctrls.GetBoxByType))
+	boxRouter.POST("/stat", wrapper(ctrls.StatBoxWeight))
 
 	// species
 	speciesRouter := Router.Group("/species")
 	speciesRouter.POST("/crt", wrapper(ctrls.CreateSpecies))
 	speciesRouter.GET("/fetchall", wrapper(ctrls.GetAllSpecies))
+
+	// tag
+	tagRouter := Router.Group("/tag")
+	tagRouter.POST("/crt", wrapper(ctrls.CreateFishTag))
 
 	// record
 	recordRouter := Router.Group("/record")

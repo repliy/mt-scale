@@ -10,7 +10,7 @@ import (
 type Species struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name         string             `validate:"required" json:"name"`
-	Tag          string             `json:"tag"`
+	HasTag       bool               `bson:"has_tag" json:"has_tag"`
 	CreateTime   time.Time          `bson:"create_time" json:"create_time"`
 	UpdateTime   time.Time          `bson:"update_time" json:"update_time"`
 	Creator      string             `json:"creator"`

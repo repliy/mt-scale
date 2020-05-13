@@ -13,13 +13,9 @@ import (
 
 // AddSpecies Add species tag
 func AddSpecies(spec entitys.Species) primitive.ObjectID {
-	if spec.Tag == "" {
-		spec.Tag = "default"
-	}
 	col, ctx := Collection("species")
 	filter := bson.D{
 		primitive.E{Key: "name", Value: spec.Name},
-		primitive.E{Key: "tag", Value: spec.Tag},
 	}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
@@ -38,9 +34,28 @@ func AddSpecies(spec entitys.Species) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	insertedID := result.InsertedID.(primitive.ObjectID)
-	syslog.Debug(">>>>>> insertedID:", insertedID)
-	return insertedID
+	return result.InsertedID.(primitive.ObjectID)
+}
+
+// SelectSpeciesByID Select species by id
+func SelectSpeciesByID(id primitive.ObjectID) entitys.Species {
+	col, ctx := Collection("species")
+	filter := bson.D{
+		primitive.E{Key: "_id", Value: id},
+	}
+	cur, err := col.Find(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var spec entitys.Species
+	if cur.Next(ctx) {
+		if err := cur.Decode(&spec); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+	}
+	return spec
 }
 
 // FetchAllSpeciesInfo Fetch all species infos

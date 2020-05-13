@@ -33,3 +33,8 @@ func GetBoxByType(ctx *gin.Context) interface{} {
 	utils.ValidateStructParams(param)
 	return models.FetchBoxes(param.BoxType)
 }
+
+// StatBoxWeight Statis box weight bl
+func StatBoxWeight(ctx *gin.Context) interface{} {
+	return models.StatBoxWeight()
+}

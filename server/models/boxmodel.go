@@ -4,6 +4,7 @@ import (
 	"mt-scale/common"
 	"mt-scale/entitys"
 	"mt-scale/exception"
+	"mt-scale/models/vo"
 	"mt-scale/syslog"
 	"time"
 
@@ -40,10 +41,30 @@ func AddBox(box entitys.Box) primitive.ObjectID {
 	return insertedID
 }
 
+// SelectBoxByID Select box by id
+func SelectBoxByID(id primitive.ObjectID) entitys.Box {
+	col, ctx := Collection("box")
+	filter := bson.D{
+		primitive.E{Key: "_id", Value: id},
+	}
+	cur, err := col.Find(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var box entitys.Box
+	if cur.Next(ctx) {
+		if err := cur.Decode(&box); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+	}
+	return box
+}
+
 // FetchBoxes Get boxes by type
 func FetchBoxes(boxType string) []entitys.Box {
 	col, ctx := Collection("box")
-
 	filter := []bson.M{
 		{
 			"$match": bson.M{
@@ -64,8 +85,57 @@ func FetchBoxes(boxType string) []entitys.Box {
 	var result []entitys.Box
 	for cur.Next(ctx) {
 		var row entitys.Box
-		err := cur.Decode(&row)
-		if err != nil {
+		if err := cur.Decode(&row); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
+// StatBoxWeight Statis the weight according to the type of box
+func StatBoxWeight() []vo.StatBoxWeightVo {
+	col, ctx := Collection("box")
+	filter := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "weightrecord",
+				"localField":   "_id",
+				"foreignField": "box_id",
+				"as":           "weights",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$weights",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$type",
+				"weight": bson.M{
+					"$sum": "$weights.weight",
+				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"type":   "$_id",
+				"weight": 1,
+			},
+		},
+	}
+	cur, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var result []vo.StatBoxWeightVo
+	for cur.Next(ctx) {
+		var row vo.StatBoxWeightVo
+		if err := cur.Decode(&row); err != nil {
 			syslog.Error(err)
 			exception.ThrowBusinessError(common.DatabaseErrorCode)
 		}

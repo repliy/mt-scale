@@ -2,7 +2,9 @@ package exception
 
 import (
 	"mt-scale/common"
+	"mt-scale/syslog"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +29,7 @@ func MiddleWare() gin.HandlerFunc {
 				} else {
 					mtException = serverError()
 				}
+				syslog.Debug("bad request end:", time.Now())
 				c.JSON(mtException.HTTPCode, mtException)
 				c.Abort()
 			}

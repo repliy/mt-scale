@@ -19,8 +19,7 @@ func CreateSpecies(ctx *gin.Context) interface{} {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 	utils.ValidateStructParams(spec)
-	specID := models.AddSpecies(spec)
-	return specID
+	return models.AddSpecies(spec)
 }
 
 // GetAllSpecies path:/species/fetchall

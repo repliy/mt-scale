@@ -14,10 +14,10 @@ import (
 )
 
 // AddWeightRecord record weight one time
-func AddWeightRecord(record entitys.WeightRecord) primitive.ObjectID {
+func AddWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 	col, ctx := Collection("weightrecord")
 	filter := bson.D{
-		primitive.E{Key: "index", Value: record.Index},
+		primitive.E{Key: "index", Value: param.Index},
 	}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
@@ -26,33 +26,57 @@ func AddWeightRecord(record entitys.WeightRecord) primitive.ObjectID {
 	}
 	if cur.Next(ctx) {
 		// override record first
-		var row entitys.WeightRecord
-		if err := cur.Decode(&row); err != nil {
-			syslog.Error(err)
-			exception.ThrowBusinessError(common.DatabaseErrorCode)
-		}
-		return UpdWeightRecord(row)
+		return UpdWeightRecord(param)
 	}
-	record.CreateTime = time.Now()
-	record.Creator = ""
-	result, err := col.InsertOne(ctx, record)
+	validateBoxAndSpec(param)
+	if param.TagID != primitive.NilObjectID {
+		tag := SelectTagByID(param.TagID)
+		if tag == (entitys.FishTag{}) {
+			exception.ThrowBusinessErrorMsg("绑定的Tag不存在")
+		}
+		if tag.Used {
+			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
+		}
+	}
+	param.CreateTime = time.Now()
+	param.Creator = ""
+	result, err := col.InsertOne(ctx, param)
 	if err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
+	// flag tag is used
+	UpdateFishTagStatus(param.TagID, true)
 	return result.InsertedID.(primitive.ObjectID)
 }
 
 // UpdWeightRecord update weight record by index
-func UpdWeightRecord(record entitys.WeightRecord) primitive.ObjectID {
+func UpdWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 	col, ctx := Collection("weightrecord")
-	filter := bson.D{primitive.E{Key: "index", Value: record.Index}}
+
+	filter := bson.D{primitive.E{Key: "index", Value: param.Index}}
+	var record entitys.WeightRecord
+	if err := col.FindOne(ctx, filter).Decode(&record); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	validateBoxAndSpec(record)
+	if param.TagID != primitive.NilObjectID && param.TagID != record.TagID {
+		tag := SelectTagByID(param.TagID)
+		if tag == (entitys.FishTag{}) {
+			exception.ThrowBusinessErrorMsg("绑定的Tag不存在")
+		}
+		if tag.Used {
+			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
+		}
+	}
 	update := bson.D{
 		primitive.E{
 			Key: "$set", Value: bson.M{
-				"weight":        record.Weight,
-				"box_id":        record.BoxID,
-				"species_id":    record.SpeciesID,
+				"weight":        param.Weight,
+				"box_id":        param.BoxID,
+				"species_id":    param.SpeciesID,
+				"tag_id":        param.TagID,
 				"update_time":   time.Now(),
 				"last_operator": "",
 			},
@@ -62,7 +86,28 @@ func UpdWeightRecord(record entitys.WeightRecord) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
+	if param.TagID != primitive.NilObjectID && param.TagID != record.TagID {
+		// restore origin tag
+		UpdateFishTagStatus(record.TagID, false)
+		// flag new tag is used
+		UpdateFishTagStatus(param.TagID, true)
+	}
 	return record.ID
+}
+
+func validateBoxAndSpec(record entitys.WeightRecord) {
+	if box := SelectBoxByID(record.BoxID); box == (entitys.Box{}) {
+		exception.ThrowBusinessErrorMsg("绑定的箱子不存在")
+	}
+	spec := SelectSpeciesByID(record.SpeciesID)
+	if spec == (entitys.Species{}) {
+		exception.ThrowBusinessErrorMsg("绑定的物种不存在")
+	}
+	if record.TagID != primitive.NilObjectID {
+		if !spec.HasTag {
+			exception.ThrowBusinessErrorMsg("该物种未设置可用Tag")
+		}
+	}
 }
 
 // FetchWeightRecord fetch weight record by conditions
@@ -85,6 +130,35 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 				"localField":   "species_id",
 				"foreignField": "_id",
 				"as":           "species",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$species",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$lookup": bson.M{
+				"from":         "fishtag",
+				"localField":   "tag_id",
+				"foreignField": "_id",
+				"as":           "tags",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$tags",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$project": bson.M{
+				"_id":     1,
+				"weight":  1,
+				"index":   1,
+				"tag":     "$tags.name",
+				"species": "$species.name",
 			},
 		},
 		{
@@ -160,16 +234,16 @@ func StatSpecieszWeight() []vo.StatSpecWeightVo {
 		},
 		{
 			"$group": bson.M{
-				"_id": "$_id",
-				"name": bson.M{
-					"$first": "$name",
-				},
-				"tag": bson.M{
-					"$first": "$tag",
-				},
+				"_id": "$name",
 				"weight": bson.M{
 					"$sum": "$weights.weight",
 				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"name":   "$_id",
+				"weight": 1,
 			},
 		},
 	}
