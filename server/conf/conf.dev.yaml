@@ -21,6 +21,8 @@ service:
     - /species/fetchall
     - /record/crt
     - /record/fetch
+    - /record/upd
+    - /record/del
     - /stat/weight
     - /tag/crt
     - /favicon.ico

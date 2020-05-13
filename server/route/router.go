@@ -90,6 +90,8 @@ func SetupRouter() *gin.Engine {
 	recordRouter := Router.Group("/record")
 	recordRouter.POST("/crt", wrapper(ctrls.AddWeightRecord))
 	recordRouter.GET("/fetch", wrapper(ctrls.GetWeightRecord))
+	recordRouter.POST("/upd", wrapper(ctrls.UpdateWeightRecord))
+	recordRouter.POST("/del", wrapper(ctrls.DelWeightRecord))
 
 	// stat
 	statRouter := Router.Group("/stat")

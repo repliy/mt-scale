@@ -4,6 +4,7 @@ import (
 	"mt-scale/common"
 	"mt-scale/entitys"
 	"mt-scale/exception"
+	"mt-scale/models/vo"
 	"mt-scale/syslog"
 	"time"
 
@@ -70,6 +71,56 @@ func FetchAllSpeciesInfo() []entitys.Species {
 	var result []entitys.Species
 	for cur.Next(ctx) {
 		var row entitys.Species
+		if err := cur.Decode(&row); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
+// StatSpecieszWeight Statistical weighing record
+func StatSpecieszWeight() []vo.StatSpecWeightVo {
+	col, ctx := Collection("species")
+	filter := []bson.M{
+		{
+			"$lookup": bson.M{
+				"from":         "weightrecord",
+				"localField":   "_id",
+				"foreignField": "species_id",
+				"as":           "weights",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$weights",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$name",
+				"weight": bson.M{
+					"$sum": "$weights.weight",
+				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"name":   "$_id",
+				"weight": 1,
+			},
+		},
+	}
+	cur, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var result []vo.StatSpecWeightVo
+	for cur.Next(ctx) {
+		var row vo.StatSpecWeightVo
 		if err := cur.Decode(&row); err != nil {
 			syslog.Error(err)
 			exception.ThrowBusinessError(common.DatabaseErrorCode)

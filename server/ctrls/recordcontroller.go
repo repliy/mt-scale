@@ -32,3 +32,26 @@ func GetWeightRecord(ctx *gin.Context) interface{} {
 	}
 	return models.FetchWeightRecord(params)
 }
+
+// UpdateWeightRecord path: record/upd
+func UpdateWeightRecord(ctx *gin.Context) interface{} {
+	var record entitys.WeightRecord
+	if err := ctx.ShouldBindJSON(&record); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.JSONFormatErrorCode)
+	}
+	utils.ValidateStructParams(record)
+	return models.UpdWeightRecord(record)
+}
+
+// DelWeightRecord path: record/del
+func DelWeightRecord(ctx *gin.Context) interface{} {
+	var dto dto.DelWeightDto
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.JSONFormatErrorCode)
+	}
+	utils.ValidateStructParams(dto)
+	models.DeleteWeightRecord(dto)
+	return "success"
+}

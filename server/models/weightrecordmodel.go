@@ -214,54 +214,17 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 	return result
 }
 
-// StatSpecieszWeight Statistical weighing record
-func StatSpecieszWeight() []vo.StatSpecWeightVo {
-	col, ctx := Collection("species")
-	filter := []bson.M{
-		{
-			"$lookup": bson.M{
-				"from":         "weightrecord",
-				"localField":   "_id",
-				"foreignField": "species_id",
-				"as":           "weights",
-			},
-		},
-		{
-			"$unwind": bson.M{
-				"path":                       "$weights",
-				"preserveNullAndEmptyArrays": true,
-			},
-		},
-		{
-			"$group": bson.M{
-				"_id": "$name",
-				"weight": bson.M{
-					"$sum": "$weights.weight",
-				},
-			},
-		},
-		{
-			"$project": bson.M{
-				"name":   "$_id",
-				"weight": 1,
-			},
-		},
+// DeleteWeightRecord Delete weight record
+func DeleteWeightRecord(dto dto.DelWeightDto) {
+	col, ctx := Collection("weightrecord")
+	recordBsonID, _ := primitive.ObjectIDFromHex(dto.ID)
+	filter := bson.M{
+		"_id": recordBsonID,
 	}
-	cur, err := col.Aggregate(ctx, filter)
-	if err != nil {
+	if _, err := col.DeleteOne(ctx, filter); err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	var result []vo.StatSpecWeightVo
-	for cur.Next(ctx) {
-		var row vo.StatSpecWeightVo
-		if err := cur.Decode(&row); err != nil {
-			syslog.Error(err)
-			exception.ThrowBusinessError(common.DatabaseErrorCode)
-		}
-		result = append(result, row)
-	}
-	return result
 }
 
 // StatTotalWeight Statis total weight
