@@ -1,6 +1,5 @@
 database:
-  url: mongodb://dev:hfxdev@portal.marinethinking.ai:27017,portal-test.marinethinking.ai:27017/admin?replicaSet=rs0&ssl=true
-  #name: lobster_test
+  url: mongodb://dev:hfxdev@portal.marinethinking.ai:27017,portal-test.marinethinking.ai:27017/admin?replicaSet=rs0
   name: ssr_test
 
 redis:
@@ -18,11 +17,13 @@ service:
     - /order/list
     - /box/crt
     - /box/fetchbytype
+    - /box/stat
     - /species/crt
     - /species/fetchall
     - /record/crt
     - /record/fetch
     - /record/stat
+    - /tag/crt
     - /favicon.ico
 
 router:
