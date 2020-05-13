@@ -263,3 +263,31 @@ func StatSpecieszWeight() []vo.StatSpecWeightVo {
 	}
 	return result
 }
+
+// StatTotalWeight Statis total weight
+func StatTotalWeight() vo.StatTotalWeightVo {
+	col, ctx := Collection("weightrecord")
+	filter := []bson.M{
+		{
+			"$group": bson.M{
+				"_id": "null",
+				"weight": bson.M{
+					"$sum": "$weight",
+				},
+			},
+		},
+	}
+	cur, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var total vo.StatTotalWeightVo
+	if cur.Next(ctx) {
+		if err := cur.Decode(&total); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+	}
+	return total
+}

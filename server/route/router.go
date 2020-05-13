@@ -76,7 +76,6 @@ func SetupRouter() *gin.Engine {
 	boxRouter := Router.Group("/box")
 	boxRouter.POST("/crt", wrapper(ctrls.CreateBox))
 	boxRouter.GET("/fetchbytype", wrapper(ctrls.GetBoxByType))
-	boxRouter.POST("/stat", wrapper(ctrls.StatBoxWeight))
 
 	// species
 	speciesRouter := Router.Group("/species")
@@ -91,7 +90,10 @@ func SetupRouter() *gin.Engine {
 	recordRouter := Router.Group("/record")
 	recordRouter.POST("/crt", wrapper(ctrls.AddWeightRecord))
 	recordRouter.GET("/fetch", wrapper(ctrls.GetWeightRecord))
-	recordRouter.GET("/stat", wrapper(ctrls.StatWeightRecord))
+
+	// stat
+	statRouter := Router.Group("/stat")
+	statRouter.GET("/weight", wrapper(ctrls.StatWeight))
 
 	return Router
 }

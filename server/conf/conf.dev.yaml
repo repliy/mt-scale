@@ -17,12 +17,11 @@ service:
     - /order/list
     - /box/crt
     - /box/fetchbytype
-    - /box/stat
     - /species/crt
     - /species/fetchall
     - /record/crt
     - /record/fetch
-    - /record/stat
+    - /stat/weight
     - /tag/crt
     - /favicon.ico
 
