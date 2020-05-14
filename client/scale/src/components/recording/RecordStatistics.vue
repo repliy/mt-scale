@@ -1,9 +1,9 @@
 <template>
   <div class="ma-0">
-    <v-row align="center" class="ma-0">
-      <v-col cols="3">
+    <v-row align="center" justify="space-around" class="">
         <v-card
           tile
+          max-width=200
         >
           <v-card-text>
             <div class="weight-tag-font">总重量</div>
@@ -12,27 +12,12 @@
             </p>
           </v-card-text>
         </v-card>
-      </v-col>
-      <v-col cols="2">
-        <v-card
-          class="mx-auto"
-          max-width="150"
-          tile
-        >
-          <v-card-text>
-            <div class="weight-tag-font">记录次数</div>
-            <p class="display-1 weight-font">
-              68 <span class="wight-unit-font">次</span>
-            </p>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="5">
         <v-card
           @click="switchCard"
           v-if="speciesShow"
-          class="mx-auto top-height"
+          class="top-height pl-2 pr-2"
           tile
+          max-width="400"
         >
           <div class="weight-tag-font">物种</div>
           <v-row
@@ -80,8 +65,9 @@
         <v-card
           @click="switchCard"
           v-else
-          class="mx-auto top-height"
+          class="top-height  pl-2 pr-2"
           tile
+          max-width="400"
         >
           <div class="weight-tag-font">箱子</div>
           <v-row
@@ -112,17 +98,6 @@
             </template>
           </v-row>
         </v-card>
-      </v-col>
-      <v-col
-        cols=2
-        align="center"
-      >
-        <v-btn
-          height="63"
-          color="primary"
-          text-color="white"
-        >记录完成</v-btn>
-      </v-col>
     </v-row>
   </div>
 </template>
@@ -134,7 +109,7 @@ export default {
     return {
       boxName: '大号',
       weight: 2108,
-      speciesShow: false
+      speciesShow: true
     }
   },
   components: {},
