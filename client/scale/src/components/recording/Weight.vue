@@ -1,21 +1,21 @@
 <template>
-  <div>
-    <v-row>
-      <v-col class="pt-0 pb-0">
+  <div style="height: 100%;">
+    <v-row no-gutters>
+      <v-col class="pb-0">
         <div class="tag_font">序号: {{index}}</div>
       </v-col>
     </v-row>
-    <v-row align="end">
+    <v-row no-gutters align="end">
       <v-col
-        class="pr-0"
         cols="4"
       >
         <p class="d-inline tag_font">当前重量: </p>
       </v-col>
-      <v-col class="pl-0">
+      <v-col>
         <input
           readonly
           class="weight_input"
+          value="123"
         />
         <v-divider darkr></v-divider>
       </v-col>
@@ -26,6 +26,8 @@
     <v-row
       class="keyboard-layout mt-5"
       justify="center"
+      align="end"
+      no-gutters
     >
       <Keyboard />
     </v-row>
@@ -47,6 +49,7 @@ export default {
 </script>
 <style scoped>
 .tag_font {
+  padding: 0px 12px 0px 12px;
   font-size: 20px;
   height: 28px;
   color: rgba(16, 16, 16, 1);
@@ -56,8 +59,7 @@ export default {
   color: rgba(51, 48, 48, 1);
   width: 183px;
   height: 100px;
-  text-align: center;
-  padding-top: 30px;
+  padding: 0px;
 }
 .keyboard-layout {
   height: 39vh;

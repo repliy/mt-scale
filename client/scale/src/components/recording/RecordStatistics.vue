@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-0">
+  <div class="">
     <v-row align="center" justify="space-around" class="">
         <v-card
           tile

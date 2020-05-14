@@ -1,29 +1,32 @@
 <template>
-  <v-row>
-    <v-col cols="8" class="red">
-      <div
-        class="top-height green"
-      >
-        <RecordStatistics />
+  <v-row
+    no-gutters
+    class="pg-height"
+  >
+    <v-col cols="8">
+      <div class="top-height pa-3">
+        <RecordStatistics class="layout-border"></RecordStatistics>
       </div>
-      <div class="mt-2 bottom-height">
+      <div class="bottom-height">
         <v-row
           align="stretch"
           justify="space-between"
           style="height: 100%;"
-          class="ma-0"
+          no-gutters
         >
           <v-col cols="5">
-            <RecordTab />
+            <RecordTab class="layout-border ml-3 mr-3"></RecordTab>
           </v-col>
-          <v-col cols="6" class="pr-0 pl-0">
-            <Weight />
+          <v-col cols="7">
+            <Weight class="layout-border mr-3"></Weight>
           </v-col>
         </v-row>
       </div>
     </v-col>
-    <v-col cols="4" class="">
-      <Option />
+    <v-col cols="4">
+      <div class="right-height">
+        <Option class="layout-border pt-3"></Option>
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -49,10 +52,15 @@ export default {
   height: calc(100vh - 64px);
 }
 .top-height {
-  height: 25vh;
-  margin-left: 12px;
+  height: 28vh;
 }
 .bottom-height {
-  height: calc(74vh - 64px);
+  height: calc(71vh - 64px);
+}
+.right-height {
+  height: calc(99vh - 64px);
+}
+.layout-border {
+  border: 1px solid rgba(187, 187, 187, 1);
 }
 </style>

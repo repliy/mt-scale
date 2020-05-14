@@ -3,7 +3,7 @@
     class="pl-2"
     hide-default-header
     hide-default-footer
-    height=450
+    height=480
     @click:row="itemExpand"
     :headers="headers"
     :items="desserts"

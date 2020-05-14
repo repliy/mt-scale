@@ -1,7 +1,7 @@
 <template>
-  <div style="padding-right: 12px;">
-    <v-row class="">
-      <v-col class="pt-0 pb-0">
+  <div style="margin-right: 12px;height: 100%;">
+    <v-row no-gutters>
+      <v-col>
         <div class="tag_font">物种选择:</div>
         <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择物种类型</p>
       </v-col>
@@ -44,11 +44,11 @@
         ></v-responsive>
       </template>
     </v-row>
-    <v-row>
+    <v-row no-gutters>
       <v-col adjust="center">
         <div class="tag_font d-inline">箱子选择:</div>
         <v-btn
-          class="pa-0 ml-5 d-inline"
+          class="ml-5 d-inline"
           small
           color="indigo"
         >
@@ -56,8 +56,8 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-row align="end">
-      <v-col class="pt-0 pb-0">
+    <v-row no-gutters align="end">
+      <v-col>
         <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择箱子类型</p>
       </v-col>
     </v-row>
@@ -152,7 +152,7 @@
         </v-card>
       </v-dialog>
     </v-row>
-    <v-row class="mt-2">
+    <v-row no-gutters class="mt-2">
       <v-col align="center">
         <v-btn
           height="40"
