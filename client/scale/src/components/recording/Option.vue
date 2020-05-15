@@ -2,20 +2,21 @@
   <div style="margin-right: 12px;height: 100%;">
     <v-row no-gutters>
       <v-col>
-        <div class="tag_font">物种选择:</div>
+        <div class="tag_font">物种选择: {{specTag}}</div>
         <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择物种类型</p>
       </v-col>
     </v-row>
     <!--species select-->
     <v-item-group
-      v-model="speciesSelected"
-      @change="changeSpeciesSelect"
+      v-model="specSele"
+      @change="changeSpec"
+      mandatory
     >
       <v-container>
         <v-row no-gutters>
-          <template v-for="n in 7">
+          <template v-for="(item,i) in speciesItems">
             <v-col
-              :key="n"
+              :key="item.id"
               cols="6"
             >
               <v-item v-slot:default="{ active, toggle }">
@@ -39,15 +40,15 @@
                       <p
                         class="mb-0"
                         style="line-height: 37px;word-break:break-all;"
-                      >hello </p>
+                      >{{item.name}}</p>
                     </v-col>
                   </v-row>
                 </v-card>
               </v-item>
             </v-col>
             <v-responsive
-              v-if="n % 2 === 0"
-              :key="`width-${n}`"
+              v-if="(i + 1) % 2 === 0"
+              :key="`width-${i}`"
               width="100%"
             ></v-responsive>
           </template>
@@ -117,7 +118,7 @@
     </v-item-group>
     <v-row justify="center">
       <v-dialog
-        v-model="dialog"
+        v-model="tagDialog"
         persistent
         max-width="350"
       >
@@ -127,36 +128,11 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="speceiesTag"
+                  v-model="specTag"
                   clearable
                   label="请输入Tag编号"
                   type="text"
                 >
-                  <template v-slot:append-outer>
-                    <v-menu
-                      style="top: -12px"
-                      offset-y
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-btn
-                          color="primary"
-                          v-on="on"
-                        >
-                          <v-icon left>mdi-menu</v-icon>
-                          Menu
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(item, index) in items"
-                          :key="index"
-                          @click="selectSpeciesTag"
-                        >
-                          <v-list-item-title>{{ item.title }}</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col></v-col>
@@ -167,12 +143,12 @@
             <v-btn
               color="green darken-1"
               text
-              @click="dialog = false"
+              @click="cancelTagDialog"
             >Disagree</v-btn>
             <v-btn
               color="green darken-1"
               text
-              @click="dialog = false"
+              @click="okTagDialog"
             >Agree</v-btn>
           </v-card-actions>
         </v-card>
@@ -246,31 +222,57 @@
 </template>
 
 <script>
+import { getSpecies } from '@/core/api/species.js'
+
 export default {
   data: () => ({
+    speciesItems: [],
+    specSele: null,
+    preSpecSele: null,
+    specTag: null,
+
     boxSelected: null,
-    speciesSelected: null,
     items: [{
       title: '#tag1'
     }],
-    dialog: false,
+    tagDialog: false,
     boxDialog: false,
     boxType: '大号',
-    boxTag: '#999',
-    speceiesTag: '',
+    boxTag: null,
     weight: 352
   }),
   methods: {
     record() {
-      this.boxSelected = 1
+      getSpecies().then((response) => {
+        this.speciesItems = response.data
+      }).catch((err) => { console.log(err) })
     },
     editSpeciesTag(index) {
       console.log(index)
       this.dialog = true
     },
-    selectSpeciesTag() { },
-    changeSpeciesSelect(val) {
-
+    okTagDialog() {
+      if (this.specTag.lenght <= 0) {
+        return
+      }
+      this.tagDialog = false
+      this.preSpecSele = this.specSele
+    },
+    cancelTagDialog() {
+      this.tagDialog = false
+      if (this.preSpecSele != null) {
+        this.specSele = this.preSpecSele
+        this.specTag = null
+      }
+    },
+    changeSpec(val) {
+      const species = this.speciesItems[val]
+      if (species.has_tag) {
+        this.tagDialog = true
+      } else {
+        this.preSpecSele = val
+        this.specTag = null
+      }
     },
     changeBoxSelect(val) {
       console.log(val)

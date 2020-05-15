@@ -16,6 +16,19 @@ type MtException struct {
 	Msg       string `json:"msg"`
 }
 
+// Error Implement error interface
+func (e *MtException) Error() string {
+	return e.Msg
+}
+​
+// New New Create
+func New(code int, msg string) *MtException {
+    return &MtException{
+	ErrorCode: code,
+        Msg:   msg,
+    }
+}
+
 // MiddleWare Gin panic middleware
 func MiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -36,11 +49,6 @@ func MiddleWare() gin.HandlerFunc {
 		}()
 		c.Next()
 	}
-}
-
-// Error Implement error interface
-func (e *MtException) Error() string {
-	return e.Msg
 }
 
 // ThrowBusinessError Internal business system exception

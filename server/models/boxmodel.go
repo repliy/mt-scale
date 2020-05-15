@@ -16,11 +16,42 @@ import (
 
 // AddBoxList Request with list of box parameters
 func AddBoxList(param dto.AddBoxListDto) {
+	// check every box is ok
+	col, ctx := Collection("box")
+	filter := bson.D{
+		primitive.E{Key: "num", Value: box.Num},
+	}
+	cur, err := col.Find(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	if cur.Next(ctx) {
 
+	}
 }
 
 // AddBox Add new box
 func AddBox(box dto.AddBoxDto) primitive.ObjectID {
+	
+	timeNow := time.Now()
+	insertObj := entitys.Box{
+		Type: box.Type,
+		Num: box.Num,
+		CreateTime: timeNow,
+		UpdateTime: timeNow,
+	}
+
+	result, err := col.InsertOne(ctx, insertObj)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	insertedID := result.InsertedID.(primitive.ObjectID)
+	return insertedID
+}
+
+func validateBox(box dto.AddBoxDto) primitive.ObjectID{
 	col, ctx := Collection("box")
 	filter := bson.D{
 		primitive.E{Key: "num", Value: box.Num},
@@ -41,21 +72,6 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 		} 
 		exception.ThrowBusinessErrorMsg(fmt.Sprintf("该号码被%s箱子占用,请更改...", record.Type))
 	}
-	timeNow := time.Now()
-	insertObj := entitys.Box{
-		Type: box.Type,
-		Num: box.Num,
-		CreateTime: timeNow,
-		UpdateTime: timeNow,
-	}
-
-	result, err := col.InsertOne(ctx, insertObj)
-	if err != nil {
-		syslog.Error(err)
-		exception.ThrowBusinessError(common.DatabaseErrorCode)
-	}
-	insertedID := result.InsertedID.(primitive.ObjectID)
-	return insertedID
 }
 
 // SelectBoxByID Select box by id
