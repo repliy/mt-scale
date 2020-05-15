@@ -6,45 +6,56 @@
         <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择物种类型</p>
       </v-col>
     </v-row>
-    <v-row no-gutters>
-      <template v-for="n in 7">
-        <v-col
-          :key="n"
-          cols="6"
-        >
-          <div
-            style="with: 107px;height: 37px;border: solid 1px black;border-radius: 6px;"
-            color="grey lighten-5"
-            class="ma-2"
-            @click="editSpeciesTag(n)"
-          >
-            <v-row
-              no-gutters
-              align="center"
+    <!--species select-->
+    <v-item-group
+      v-model="speciesSelected"
+      @change="changeSpeciesSelect"
+    >
+      <v-container>
+        <v-row no-gutters>
+          <template v-for="n in 7">
+            <v-col
+              :key="n"
+              cols="6"
             >
-              <v-col cols="3">
-                <v-icon
-                  class="d-inline"
-                  color="red"
-                >mdi-label</v-icon>
-              </v-col>
-              <v-col>
-                <p
-                  class="mb-0"
-                  style="line-height: 37px;word-break:break-all;"
-                >hello </p>
-              </v-col>
-            </v-row>
-          </div>
-        </v-col>
-        <v-responsive
-          v-if="n % 2 === 0"
-          :key="`width-${n}`"
-          width="100%"
-        ></v-responsive>
-      </template>
-    </v-row>
-    <v-row no-gutters>
+              <v-item v-slot:default="{ active, toggle }">
+                <v-card
+                  style="with: 107px;height: 37px;border-radius: 6px;"
+                  class="ma-1 pa-0"
+                  :color="active ? 'primary lighten-1' : ''"
+                  @click="toggle"
+                >
+                  <v-row
+                    no-gutters
+                    align="center"
+                  >
+                    <v-col cols="3">
+                      <v-icon
+                        class="d-inline"
+                        color="red"
+                      >mdi-label</v-icon>
+                    </v-col>
+                    <v-col>
+                      <p
+                        class="mb-0"
+                        style="line-height: 37px;word-break:break-all;"
+                      >hello </p>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-item>
+            </v-col>
+            <v-responsive
+              v-if="n % 2 === 0"
+              :key="`width-${n}`"
+              width="100%"
+            ></v-responsive>
+          </template>
+        </v-row>
+      </v-container>
+    </v-item-group>
+    <v-divider darkr></v-divider>
+    <v-row no-gutters class="mt-5">
       <v-col adjust="center">
         <div class="tag_font d-inline">箱子选择:</div>
         <v-btn
@@ -65,7 +76,11 @@
         <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择箱子类型</p>
       </v-col>
     </v-row>
-    <v-item-group v-model="boxSelected" @change="changeBoxSelect">
+    <!--box select-->
+    <v-item-group
+      v-model="boxSelected"
+      @change="changeBoxSelect"
+    >
       <v-container>
         <v-row no-gutters>
           <template v-for="n in 7">
@@ -77,7 +92,7 @@
                 <v-card
                   style="with: 107px;height: 52px;border-radius: 6px;"
                   class="ma-1 pa-0"
-                  :color="active ? 'primary' : ''"
+                  :color="active ? 'primary lighten-1' : ''"
                   @click="toggle"
                 >
                   <p
@@ -234,6 +249,7 @@
 export default {
   data: () => ({
     boxSelected: null,
+    speciesSelected: null,
     items: [{
       title: '#tag1'
     }],
@@ -253,6 +269,9 @@ export default {
       this.dialog = true
     },
     selectSpeciesTag() { },
+    changeSpeciesSelect(val) {
+
+    },
     changeBoxSelect(val) {
       console.log(val)
     }
