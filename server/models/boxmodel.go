@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"mt-scale/models/dto"
 	"mt-scale/common"
 	"mt-scale/entitys"
 	"mt-scale/exception"
@@ -12,11 +14,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// AddBoxList Request with list of box parameters
+func AddBoxList(param dto.AddBoxListDto) {
+
+}
+
 // AddBox Add new box
-func AddBox(box entitys.Box) primitive.ObjectID {
+func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 	col, ctx := Collection("box")
 	filter := bson.D{
-		primitive.E{Key: "type", Value: box.Type},
 		primitive.E{Key: "num", Value: box.Num},
 	}
 	cur, err := col.Find(ctx, filter)
@@ -25,19 +31,30 @@ func AddBox(box entitys.Box) primitive.ObjectID {
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
 	if cur.Next(ctx) {
-		exception.ThrowBusinessErrorMsg("该号码的箱子已存在，请更改...")
+		var record entitys.Box
+		if err := cur.Decode(&record); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		if record.Type == box.Type {
+			return record.ID
+		} 
+		exception.ThrowBusinessErrorMsg(fmt.Sprintf("该号码被%s箱子占用,请更改...", record.Type))
 	}
 	timeNow := time.Now()
-	box.CreateTime = timeNow
-	box.UpdateTime = timeNow
+	insertObj := entitys.Box{
+		Type: box.Type,
+		Num: box.Num,
+		CreateTime: timeNow,
+		UpdateTime: timeNow,
+	}
 
-	result, err := col.InsertOne(ctx, box)
+	result, err := col.InsertOne(ctx, insertObj)
 	if err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
 	insertedID := result.InsertedID.(primitive.ObjectID)
-	syslog.Debug(">>>>>> insertedID:", insertedID)
 	return insertedID
 }
 
