@@ -51,27 +51,26 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 	return insertedID
 }
 
-func validateBox(box dto.AddBoxDto) primitive.ObjectID{
+func validateBox(box dto.AddBoxDto) (primitive.ObjectID, error){
 	col, ctx := Collection("box")
 	filter := bson.D{
 		primitive.E{Key: "num", Value: box.Num},
 	}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
-		syslog.Error(err)
-		exception.ThrowBusinessError(common.DatabaseErrorCode)
+		return nil, err
 	}
 	if cur.Next(ctx) {
 		var record entitys.Box
 		if err := cur.Decode(&record); err != nil {
-			syslog.Error(err)
-			exception.ThrowBusinessError(common.DatabaseErrorCode)
+			return nil, err
 		}
 		if record.Type == box.Type {
-			return record.ID
+			return record.ID, nil
 		} 
 		exception.ThrowBusinessErrorMsg(fmt.Sprintf("该号码被%s箱子占用,请更改...", record.Type))
 	}
+	
 }
 
 // SelectBoxByID Select box by id
