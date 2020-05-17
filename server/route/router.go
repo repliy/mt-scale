@@ -98,5 +98,9 @@ func SetupRouter() *gin.Engine {
 	statRouter := Router.Group("/stat")
 	statRouter.GET("/weight", wrapper(ctrls.StatWeight))
 
+	// task
+	taskRouter := Router.Group("/task")
+	taskRouter.GET("/current", wrapper(ctrls.GetCurrentTask))
+
 	return Router
 }

@@ -26,6 +26,7 @@ service:
     - /record/del
     - /stat/weight
     - /tag/crt
+    - /task/current
     - /favicon.ico
 
 router:
