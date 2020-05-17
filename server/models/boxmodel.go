@@ -64,10 +64,12 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 	// new one, insert to database
 	col, ctx := Collection("box")
 	timeNow := time.Now()
+	taskBsonID, _ := primitive.ObjectIDFromHex(box.TaskID)
 	insertObj := entitys.Box{
 		Type:       box.Type,
 		Num:        box.Num,
 		Status:     "enable",
+		TaskID:     taskBsonID,
 		CreateTime: timeNow,
 		UpdateTime: timeNow,
 	}
@@ -82,8 +84,16 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 
 func validateBox(box dto.AddBoxDto) (primitive.ObjectID, string, error) {
 	col, ctx := Collection("box")
+	taskBsonID, _ := primitive.ObjectIDFromHex(box.TaskID)
 	filter := bson.D{
-		primitive.E{Key: "num", Value: box.Num},
+		primitive.E{
+			Key:   "num",
+			Value: box.Num,
+		},
+		primitive.E{
+			Key:   "task_id",
+			Value: taskBsonID,
+		},
 	}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
@@ -124,18 +134,21 @@ func SelectBoxByID(id primitive.ObjectID) entitys.Box {
 }
 
 // FetchBoxes Get boxes by type
-func FetchBoxes(boxType string) []entitys.Box {
+func FetchBoxes(dto dto.QueryBoxDto) []entitys.Box {
 	col, ctx := Collection("box")
+	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
 	filter := []bson.M{
 		{
 			"$match": bson.M{
-				"status": "enable",
-				"type":   boxType,
+				"status":  "enable",
+				"type":    dto.BoxType,
+				"task_id": taskBsonID,
 			},
 		},
-		{"$sort": bson.M{
-			"num": -1,
-		},
+		{
+			"$sort": bson.M{
+				"num": -1,
+			},
 		},
 	}
 	cur, err := col.Aggregate(ctx, filter)

@@ -58,5 +58,5 @@ func GetBoxByType(ctx *gin.Context) interface{} {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 	utils.ValidateStructParams(param)
-	return models.FetchBoxes(param.BoxType)
+	return models.FetchBoxes(param)
 }

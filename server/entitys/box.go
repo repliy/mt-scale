@@ -12,6 +12,7 @@ type Box struct {
 	Type         string             `validate:"required"`
 	Num          string             `validate:"required"`
 	Status       string             `json:"status"`
+	TaskID       primitive.ObjectID `validate:"required" bson:"task_id" json:"task_id"`
 	CreateTime   time.Time          `bson:"create_time" json:"create_time"`
 	UpdateTime   time.Time          `bson:"update_time" json:"update_time"`
 	Creator      string             `json:"creator"`

@@ -3,12 +3,14 @@ package dto
 // QueryBoxDto Query boxes request params
 type QueryBoxDto struct {
 	BoxType string `form:"box_type" validate:"required"`
+	TaskID  string `form:"task_id" validate:"required" bson:"task_id" json:"task_id"`
 }
 
 // AddBoxDto Add singl one request
 type AddBoxDto struct {
-	Type string `validate:"required"`
-	Num  string `validate:"required"`
+	Type   string `validate:"required"`
+	Num    string `validate:"required"`
+	TaskID string `validate:"required" bson:"task_id" json:"task_id"`
 }
 
 // AddBoxListDto Add box with a request list
