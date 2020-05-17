@@ -2,10 +2,10 @@ package models
 
 import (
 	"fmt"
-	"mt-scale/models/dto"
 	"mt-scale/common"
 	"mt-scale/entitys"
 	"mt-scale/exception"
+	"mt-scale/models/dto"
 	"mt-scale/models/vo"
 	"mt-scale/syslog"
 	"time"
@@ -15,33 +15,62 @@ import (
 )
 
 // AddBoxList Request with list of box parameters
-func AddBoxList(param dto.AddBoxListDto) {
-	// check every box is ok
-	col, ctx := Collection("box")
-	filter := bson.D{
-		primitive.E{Key: "num", Value: box.Num},
+func AddBoxList(boxes []dto.AddBoxDto) (vo.BoxValidateErrorVo, []vo.AddBoxVo) {
+	var valResult vo.BoxValidateErrorVo
+	var boxList []vo.AddBoxVo
+	// validate box info
+	for _, box := range boxes {
+		_, valMsg, err := validateBox(box)
+		if err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		if valMsg != "" {
+			valResult.BoxType = box.Type
+			valResult.BoxNum = box.Num
+			valResult.ValidateMsg = valMsg
+			return valResult, boxList
+		}
 	}
-	cur, err := col.Find(ctx, filter)
-	if err != nil {
-		syslog.Error(err)
-		exception.ThrowBusinessError(common.DatabaseErrorCode)
-	}
-	if cur.Next(ctx) {
+	// add box with num
+	for _, box := range boxes {
+		var boxRes vo.AddBoxVo
+		boxID := AddBox(box)
 
+		boxRes.BoxID = boxID
+		boxRes.BoxType = box.Type
+		boxRes.BoxNum = box.Num
+		boxList = append(boxList, boxRes)
 	}
+
+	return valResult, boxList
 }
 
 // AddBox Add new box
 func AddBox(box dto.AddBoxDto) primitive.ObjectID {
-	
+	// validate request info
+	boxID, valMsg, err := validateBox(box)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	if valMsg != "" {
+		exception.ThrowBusinessErrorMsg(valMsg)
+	}
+	if boxID != primitive.NilObjectID {
+		// already exist
+		return boxID
+	}
+	// new one, insert to database
+	col, ctx := Collection("box")
 	timeNow := time.Now()
 	insertObj := entitys.Box{
-		Type: box.Type,
-		Num: box.Num,
+		Type:       box.Type,
+		Num:        box.Num,
+		Status:     "enable",
 		CreateTime: timeNow,
 		UpdateTime: timeNow,
 	}
-
 	result, err := col.InsertOne(ctx, insertObj)
 	if err != nil {
 		syslog.Error(err)
@@ -51,26 +80,26 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 	return insertedID
 }
 
-func validateBox(box dto.AddBoxDto) (primitive.ObjectID, error){
+func validateBox(box dto.AddBoxDto) (primitive.ObjectID, string, error) {
 	col, ctx := Collection("box")
 	filter := bson.D{
 		primitive.E{Key: "num", Value: box.Num},
 	}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
-		return nil, err
+		return primitive.NilObjectID, "", err
 	}
 	if cur.Next(ctx) {
 		var record entitys.Box
 		if err := cur.Decode(&record); err != nil {
-			return nil, err
+			return primitive.NilObjectID, "", err
 		}
 		if record.Type == box.Type {
-			return record.ID, nil
-		} 
-		exception.ThrowBusinessErrorMsg(fmt.Sprintf("该号码被%s箱子占用,请更改...", record.Type))
+			return record.ID, "", nil
+		}
+		return primitive.NilObjectID, fmt.Sprintf("箱号%s被%s箱子占用,请更改...", box.Num, record.Type), nil
 	}
-	
+	return primitive.NilObjectID, "", nil
 }
 
 // SelectBoxByID Select box by id

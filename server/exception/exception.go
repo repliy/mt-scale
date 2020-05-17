@@ -20,13 +20,14 @@ type MtException struct {
 func (e *MtException) Error() string {
 	return e.Msg
 }
-​
+
 // New New Create
 func New(code int, msg string) *MtException {
-    return &MtException{
-	ErrorCode: code,
-        Msg:   msg,
-    }
+	return &MtException{
+		HTTPCode:  http.StatusOK,
+		ErrorCode: code,
+		Msg:       msg,
+	}
 }
 
 // MiddleWare Gin panic middleware

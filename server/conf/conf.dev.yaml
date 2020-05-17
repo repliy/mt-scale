@@ -16,6 +16,7 @@ service:
   ignoreurl:
     - /order/list
     - /box/crt
+    - /box/crtboxes
     - /box/fetchbytype
     - /species/crt
     - /species/fetchall

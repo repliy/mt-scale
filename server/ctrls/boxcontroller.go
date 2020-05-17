@@ -5,6 +5,7 @@ import (
 	"mt-scale/exception"
 	"mt-scale/models"
 	"mt-scale/models/dto"
+	"mt-scale/models/vo"
 	"mt-scale/syslog"
 	"mt-scale/utils"
 
@@ -20,6 +21,22 @@ func CreateBox(ctx *gin.Context) interface{} {
 	}
 	utils.ValidateStructParams(box)
 	return models.AddBox(box)
+}
+
+// CreateBoxList Batch add box
+func CreateBoxList(ctx *gin.Context) interface{} {
+	var params dto.AddBoxListDto
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.JSONFormatErrorCode)
+	}
+	utils.ValidateStructParams(params)
+	var boxes []dto.AddBoxDto = params.BoxList
+	validate, boxList := models.AddBoxList(boxes)
+	if validate != (vo.BoxValidateErrorVo{}) {
+		return validate
+	}
+	return boxList
 }
 
 // CreateBoxNum path: box/boxlist/add
@@ -43,4 +60,3 @@ func GetBoxByType(ctx *gin.Context) interface{} {
 	utils.ValidateStructParams(param)
 	return models.FetchBoxes(param.BoxType)
 }
-
