@@ -17,7 +17,14 @@ import (
 func AddWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 	col, ctx := Collection("weightrecord")
 	filter := bson.D{
-		primitive.E{Key: "index", Value: param.Index},
+		primitive.E{
+			Key:   "index",
+			Value: param.Index,
+		},
+		primitive.E{
+			Key:   "task_id",
+			Value: param.TaskID,
+		},
 	}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
@@ -53,8 +60,16 @@ func AddWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 // UpdWeightRecord update weight record by index
 func UpdWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 	col, ctx := Collection("weightrecord")
-
-	filter := bson.D{primitive.E{Key: "index", Value: param.Index}}
+	filter := bson.D{
+		primitive.E{
+			Key:   "index",
+			Value: param.Index,
+		},
+		primitive.E{
+			Key:   "task_id",
+			Value: param.TaskID,
+		},
+	}
 	var record entitys.WeightRecord
 	if err := col.FindOne(ctx, filter).Decode(&record); err != nil {
 		syslog.Error(err)
@@ -173,6 +188,12 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 			"$limit": limit,
 		},
 	}
+	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
+	filter = append(filter, primitive.M{
+		"$match": primitive.M{
+			"task_id": taskBsonID,
+		},
+	})
 	if dto.BoxID != "" {
 		boxBsonID, _ := primitive.ObjectIDFromHex(dto.BoxID)
 		filter = append(filter, primitive.M{
@@ -215,7 +236,7 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 }
 
 // DeleteWeightRecord Delete weight record
-func DeleteWeightRecord(dto dto.DelWeightDto) {
+func DeleteWeightRecord(dto dto.DelRecordDto) {
 	col, ctx := Collection("weightrecord")
 	recordBsonID, _ := primitive.ObjectIDFromHex(dto.ID)
 	filter := bson.M{

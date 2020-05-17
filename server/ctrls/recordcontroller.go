@@ -46,7 +46,7 @@ func UpdateWeightRecord(ctx *gin.Context) interface{} {
 
 // DelWeightRecord path: record/del
 func DelWeightRecord(ctx *gin.Context) interface{} {
-	var dto dto.DelWeightDto
+	var dto dto.DelRecordDto
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
