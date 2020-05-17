@@ -81,7 +81,7 @@ func FetchAllSpeciesInfo() []entitys.Species {
 }
 
 // StatSpecieszWeight Statistical weighing record
-func StatSpecieszWeight() []vo.StatSpecWeightVo {
+func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 	col, ctx := Collection("species")
 	filter := []bson.M{
 		{
@@ -90,6 +90,11 @@ func StatSpecieszWeight() []vo.StatSpecWeightVo {
 				"localField":   "_id",
 				"foreignField": "species_id",
 				"as":           "weights",
+			},
+		},
+		{
+			"$match": bson.M{
+				"task_id": taskID,
 			},
 		},
 		{

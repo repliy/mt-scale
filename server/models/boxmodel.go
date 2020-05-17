@@ -169,7 +169,7 @@ func FetchBoxes(dto dto.QueryBoxDto) []entitys.Box {
 }
 
 // StatBoxWeight Statis the weight according to the type of box
-func StatBoxWeight() []vo.StatBoxWeightVo {
+func StatBoxWeight(taskID primitive.ObjectID) []vo.StatBoxWeightVo {
 	col, ctx := Collection("box")
 	filter := []bson.M{
 		{
@@ -178,6 +178,11 @@ func StatBoxWeight() []vo.StatBoxWeightVo {
 				"localField":   "_id",
 				"foreignField": "box_id",
 				"as":           "weights",
+			},
+		},
+		{
+			"$match": bson.M{
+				"task_id": taskID,
 			},
 		},
 		{

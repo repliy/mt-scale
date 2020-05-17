@@ -228,9 +228,14 @@ func DeleteWeightRecord(dto dto.DelWeightDto) {
 }
 
 // StatTotalWeight Statis total weight
-func StatTotalWeight() vo.StatTotalWeightVo {
+func StatTotalWeight(taskID primitive.ObjectID) vo.StatTotalWeightVo {
 	col, ctx := Collection("weightrecord")
 	filter := []bson.M{
+		{
+			"$match": bson.M{
+				"task_id": taskID,
+			},
+		},
 		{
 			"$group": bson.M{
 				"_id": "null",
