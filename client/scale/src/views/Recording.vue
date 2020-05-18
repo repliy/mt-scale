@@ -35,16 +35,31 @@ import RecordStatistics from '@/components/recording/RecordStatistics.vue'
 import RecordTab from '@/components/recording/RecordTab.vue'
 import Weight from '@/components/recording/Weight.vue'
 import Option from '@/components/recording/Option.vue'
+import { getLatestTask } from '@/core/api/task.js'
 
 export default {
   name: 'Recording',
+  data: () => ({
+
+  }),
   components: {
     RecordStatistics,
     RecordTab,
     Weight,
     Option
   },
-  methods: {}
+  mounted() {
+    this.getTask()
+  },
+  methods: {
+    getTask() {
+      getLatestTask().then((response) => {
+        this.$store.commit('SET_TASK_ID', response.data)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+  }
 }
 </script>
 <style scoped>
