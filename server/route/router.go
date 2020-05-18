@@ -100,7 +100,7 @@ func SetupRouter() *gin.Engine {
 
 	// task
 	taskRouter := Router.Group("/task")
-	taskRouter.GET("/current", wrapper(ctrls.GetCurrentTask))
+	taskRouter.GET("/latest", wrapper(ctrls.GetCurrentTask))
 
 	return Router
 }

@@ -56,7 +56,10 @@
       </v-container>
     </v-item-group>
     <v-divider darkr></v-divider>
-    <v-row no-gutters class="mt-5">
+    <v-row
+      no-gutters
+      class="mt-5"
+    >
       <v-col adjust="center">
         <div class="tag_font d-inline">箱子选择:</div>
         <v-btn
@@ -167,6 +170,7 @@
         >记录</v-btn>
       </v-col>
     </v-row>
+    <!--add box tag dialog-->
     <v-row>
       <v-dialog
         v-model="boxDialog"
@@ -174,6 +178,7 @@
         max-width="350"
       >
         <v-card>
+          <v-alert class="bindBoxAlert" :value="bindAlert" type="error">{{bindBoxTagError}}</v-alert>
           <v-card-title>
             <span class="headline">绑定箱子号</span>
           </v-card-title>
@@ -182,25 +187,29 @@
               <v-text-field
                 label="小号*"
                 required
+                v-model="editBoxForm.s.num"
               ></v-text-field>
               <v-text-field
                 label="中号*"
                 required
+                v-model="editBoxForm.m.num"
               ></v-text-field>
               <v-text-field
                 label="大号*"
+                v-model="editBoxForm.l.num"
                 required
               ></v-text-field>
               <v-text-field
                 label="特大*"
                 required
+                v-model="editBoxForm.xl.num"
               ></v-text-field>
               <v-text-field
                 label="特殊*"
                 required
+                v-model="editBoxForm.special.num"
               ></v-text-field>
             </v-container>
-            <small>*indicates required field</small>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -212,10 +221,16 @@
             <v-btn
               color="blue darken-1"
               text
-              @click="dialog = false"
+              @click="bindBoxNum"
             >Save</v-btn>
           </v-card-actions>
         </v-card>
+        <v-overlay :value="loading">
+          <v-progress-circular
+            indeterminate
+            size="64"
+          ></v-progress-circular>
+        </v-overlay>
       </v-dialog>
     </v-row>
   </div>
@@ -223,14 +238,15 @@
 
 <script>
 import { getSpecies } from '@/core/api/species.js'
+import { createBoxList } from '@/core/api/box.js'
 
 export default {
   data: () => ({
+    loading: false,
     speciesItems: [],
     specSele: null,
     preSpecSele: null,
     specTag: null,
-
     boxSelected: null,
     items: [{
       title: '#tag1'
@@ -239,7 +255,31 @@ export default {
     boxDialog: false,
     boxType: '大号',
     boxTag: null,
-    weight: 352
+    weight: 352,
+    bindAlert: false,
+    bindBoxTagError: '',
+    editBoxForm: {
+      s: {
+        type: 's',
+        num: ''
+      },
+      m: {
+        type: 'm',
+        num: ''
+      },
+      l: {
+        type: 'l',
+        num: ''
+      },
+      xl: {
+        type: 'xl',
+        num: ''
+      },
+      special: {
+        type: 'special',
+        num: ''
+      }
+    }
   }),
   methods: {
     record() {
@@ -274,6 +314,43 @@ export default {
         this.specTag = null
       }
     },
+    showBindBoxAlert(msg) {
+      const _this = this
+      this.loading = false
+      setTimeout(() => {
+        console.log('timeout functioin')
+        _this.bindAlert = false
+        _this.bindBoxTagError = ''
+      }, 1500)
+      this.bindBoxTagError = msg
+      this.bindAlert = true
+    },
+    bindBoxNum() {
+      this.loading = true
+      const params = []
+      const boxNums = []
+      for (const key in this.editBoxForm) {
+        const item = this.editBoxForm[key]
+        if (item.num) {
+          if (boxNums.indexOf(item.num) !== -1) {
+            // find same box num
+            this.showBindBoxAlert(item.type + ' type box num ' + item.num + 'duplication')
+            return
+          }
+          boxNums.push(item.num)
+          item.task_id = this.$store.getters.taskId
+          params.push(item)
+        }
+      }
+      createBoxList({
+        box_list: params
+      }).then((response) => {
+        this.loading = false
+        this.boxDialog = false
+      }).catch((error) => {
+        this.showBindBoxAlert(error)
+      })
+    },
     changeBoxSelect(val) {
       console.log(val)
     }
@@ -281,4 +358,9 @@ export default {
 }
 </script>
 <style scoped>
+.bindBoxAlert {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
 </style>
