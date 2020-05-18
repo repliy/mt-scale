@@ -16,6 +16,9 @@ import (
 
 // AddBoxList Request with list of box parameters
 func AddBoxList(boxes []dto.AddBoxDto) (vo.BoxValidateErrorVo, []vo.AddBoxVo) {
+	if len(boxes) == 0 {
+		exception.ThrowBusinessErrorMsg("绑定箱子数量为空")
+	}
 	var valResult vo.BoxValidateErrorVo
 	var boxList []vo.AddBoxVo
 	// validate box info

@@ -25,7 +25,7 @@
     </v-col>
     <v-col cols="4">
       <div class="right-height">
-        <Option class="layout-border pt-3"></Option>
+        <Option class="layout-border pt-3" v-on:weightRecord="weightRecord"></Option>
       </div>
     </v-col>
   </v-row>
@@ -58,6 +58,9 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
+    },
+    weightRecord(data) {
+      console.log(data)
     }
   }
 }

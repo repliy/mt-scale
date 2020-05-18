@@ -8,7 +8,7 @@
     </v-row>
     <!--species select-->
     <v-item-group
-      v-model="specSele"
+      v-model="specSeleIndex"
       @change="changeSpec"
       mandatory
     >
@@ -82,12 +82,13 @@
     </v-row>
     <!--box select-->
     <v-item-group
-      v-model="boxSelected"
-      @change="changeBoxSelect"
+      v-model="boxSeleIndex"
+      @change="changeBox"
+      mandatory
     >
       <v-container>
         <v-row no-gutters>
-          <template v-for="n in 7">
+          <template v-for="(box, n) in BoxItems">
             <v-col
               :key="n"
               cols="6"
@@ -98,20 +99,21 @@
                   class="ma-1 pa-0"
                   :color="active ? 'primary lighten-1' : ''"
                   @click="toggle"
+                  :disabled="box.num == ''"
                 >
                   <p
                     class="mb-0 pl-2"
                     style="font-size: 20px;word-break:break-all;"
-                  >hello </p>
+                  >{{box.name}}</p>
                   <p
                     class="mb-0 pr-2"
                     style="font-size: 16px;word-break:break-all;text-align: right;"
-                  >#100</p>
+                  >{{box.num}}</p>
                 </v-card>
               </v-item>
             </v-col>
             <v-responsive
-              v-if="n % 2 === 0"
+              v-if="(n + 1) % 2 === 0"
               :key="`width-${n}`"
               width="100%"
             ></v-responsive>
@@ -187,27 +189,27 @@
               <v-text-field
                 label="小号*"
                 required
-                v-model="editBoxForm.s.num"
+                v-model="BoxItems[0].num"
               ></v-text-field>
               <v-text-field
                 label="中号*"
                 required
-                v-model="editBoxForm.m.num"
+                v-model="BoxItems[1].num"
               ></v-text-field>
               <v-text-field
                 label="大号*"
-                v-model="editBoxForm.l.num"
+                v-model="BoxItems[2].num"
                 required
               ></v-text-field>
               <v-text-field
                 label="特大*"
                 required
-                v-model="editBoxForm.xl.num"
+                v-model="BoxItems[3].num"
               ></v-text-field>
               <v-text-field
                 label="特殊*"
                 required
-                v-model="editBoxForm.special.num"
+                v-model="BoxItems[4].num"
               ></v-text-field>
             </v-container>
           </v-card-text>
@@ -243,46 +245,64 @@ import { createBoxList } from '@/core/api/box.js'
 export default {
   data: () => ({
     loading: false,
+    // species
+    tagDialog: false,
     speciesItems: [],
-    specSele: null,
+    specSeleIndex: null,
     preSpecSele: null,
     specTag: null,
-    boxSelected: null,
-    items: [{
-      title: '#tag1'
-    }],
-    tagDialog: false,
+    // box
+    boxSeleIndex: null,
     boxDialog: false,
-    boxType: '大号',
-    boxTag: null,
     weight: 352,
     bindAlert: false,
     bindBoxTagError: '',
-    editBoxForm: {
-      s: {
+    BoxItems: [
+      {
+        id: '',
         type: 's',
-        num: ''
+        num: '',
+        name: '小号'
       },
-      m: {
+      {
+        id: '',
         type: 'm',
-        num: ''
+        num: '',
+        name: '中号'
       },
-      l: {
+      {
+        id: '',
         type: 'l',
-        num: ''
+        num: '',
+        name: '大号'
       },
-      xl: {
+      {
+        id: '',
         type: 'xl',
-        num: ''
+        num: '',
+        name: '超大号'
       },
-      special: {
+      {
+        id: '',
         type: 'special',
-        num: ''
+        num: '',
+        name: '特殊'
       }
-    }
+    ]
   }),
+  mounted() {
+    this.getSpeciesInfo()
+  },
   methods: {
     record() {
+      const speciesId = this.speciesItems[this.specSeleIndex].id
+      const boxId = this.BoxItems[this.boxSeleIndex].id
+      this.$emit('weightRecord', {
+        species_id: speciesId,
+        box_id: boxId
+      })
+    },
+    getSpeciesInfo() {
       getSpecies().then((response) => {
         this.speciesItems = response.data
       }).catch((err) => { console.log(err) })
@@ -296,12 +316,12 @@ export default {
         return
       }
       this.tagDialog = false
-      this.preSpecSele = this.specSele
+      this.preSpecSele = this.specSeleIndex
     },
     cancelTagDialog() {
       this.tagDialog = false
       if (this.preSpecSele != null) {
-        this.specSele = this.preSpecSele
+        this.specSeleIndex = this.preSpecSele
         this.specTag = null
       }
     },
@@ -329,8 +349,7 @@ export default {
       this.loading = true
       const params = []
       const boxNums = []
-      for (const key in this.editBoxForm) {
-        const item = this.editBoxForm[key]
+      for (const item of this.BoxItems) {
         if (item.num) {
           if (boxNums.indexOf(item.num) !== -1) {
             // find same box num
@@ -347,11 +366,21 @@ export default {
       }).then((response) => {
         this.loading = false
         this.boxDialog = false
+        const binds = response.data
+        for (const bind of binds) {
+          for (const box of this.BoxItems) {
+            if (bind.box_num === box.num && bind.box_type === box.type) {
+              // same box
+              box.id = bind.box_id
+            }
+          }
+        }
       }).catch((error) => {
-        this.showBindBoxAlert(error)
+        this.showBindBoxAlert(error.msg)
       })
     },
-    changeBoxSelect(val) {
+    changeBox(val) {
+      this.boxSeleIndex = val
       console.log(val)
     }
   }
