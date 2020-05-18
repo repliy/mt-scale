@@ -60,3 +60,14 @@ func GetBoxByType(ctx *gin.Context) interface{} {
 	utils.ValidateStructParams(param)
 	return models.FetchBoxes(param)
 }
+
+// GetLatestBoxes path: box/latestbox
+func GetLatestBoxes(ctx *gin.Context) interface{} {
+	var param dto.QueryLatestBoxDto
+	if err := ctx.ShouldBindQuery(&param); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.JSONFormatErrorCode)
+	}
+	utils.ValidateStructParams(param)
+	return models.FetchLatestBoxes(param)
+}

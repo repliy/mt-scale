@@ -18,6 +18,7 @@ service:
     - /box/crt
     - /box/crtboxes
     - /box/fetchbytype
+    - /box/latestbox
     - /species/crt
     - /species/fetchall
     - /record/crt

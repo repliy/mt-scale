@@ -77,6 +77,7 @@ func SetupRouter() *gin.Engine {
 	boxRouter.POST("/crt", wrapper(ctrls.CreateBox))
 	boxRouter.POST("/crtboxes", wrapper(ctrls.CreateBoxList))
 	boxRouter.GET("/fetchbytype", wrapper(ctrls.GetBoxByType))
+	boxRouter.GET("/latestbox", wrapper(ctrls.GetLatestBoxes))
 
 	// species
 	speciesRouter := Router.Group("/species")

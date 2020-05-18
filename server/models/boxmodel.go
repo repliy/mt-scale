@@ -115,6 +115,58 @@ func validateBox(box dto.AddBoxDto) (primitive.ObjectID, string, error) {
 	return primitive.NilObjectID, "", nil
 }
 
+// FetchLatestBoxes get box with number on last time
+func FetchLatestBoxes(dto dto.QueryLatestBoxDto) []vo.AddBoxVo {
+	col, ctx := Collection("box")
+	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
+	filter := []bson.M{
+		{
+			"$match": bson.M{
+				"status":  "enable",
+				"task_id": taskBsonID,
+			},
+		},
+		{
+			"$sort": bson.M{
+				"create_time": -1,
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$type",
+				"id": bson.M{
+					"$first": "$_id",
+				},
+				"num": bson.M{
+					"$first": "$num",
+				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"box_id":   "$id",
+				"box_num":  "$num",
+				"box_type": "$_id",
+			},
+		},
+	}
+	cur, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var result []vo.AddBoxVo
+	for cur.Next(ctx) {
+		var row vo.AddBoxVo
+		if err := cur.Decode(&row); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
 // SelectBoxByID Select box by id
 func SelectBoxByID(id primitive.ObjectID) entitys.Box {
 	col, ctx := Collection("box")

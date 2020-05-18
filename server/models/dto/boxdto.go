@@ -6,6 +6,11 @@ type QueryBoxDto struct {
 	TaskID  string `form:"task_id" validate:"required" bson:"task_id" json:"task_id"`
 }
 
+// QueryLatestBoxDto Query boxes
+type QueryLatestBoxDto struct {
+	TaskID string `form:"task_id" validate:"required" json:"task_id"`
+}
+
 // AddBoxDto Add singl one request
 type AddBoxDto struct {
 	Type   string `validate:"required"`
