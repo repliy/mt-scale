@@ -26,3 +26,13 @@ type AddWeightRecordDto struct {
 	Index     int                `validate:"gte=0" json:"index"`
 	TagName   string             `bson:"tag_name" json:"tag_name"`
 }
+
+// UpdWeightRecordDto entity
+type UpdWeightRecordDto struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Weight    float32            `validate:"numeric" json:"weight"`
+	BoxID     primitive.ObjectID `bson:"box_id" json:"box_id"`
+	SpeciesID primitive.ObjectID `bson:"species_id" json:"species_id"`
+	Index     int                `validate:"gte=0" json:"index"`
+	TagName   string             `bson:"tag_name" json:"tag_name"`
+}

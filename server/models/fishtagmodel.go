@@ -61,7 +61,7 @@ func SelectTagByID(id primitive.ObjectID) entitys.FishTag {
 }
 
 // SelectTagByName Select tag by tag name
-func SelectTagByName(name string) (primitive.ObjectID, bool) {
+func SelectTagByName(name string) entitys.FishTag {
 	col, ctx := Collection("fishtag")
 	filter := bson.D{
 		primitive.E{
@@ -81,7 +81,7 @@ func SelectTagByName(name string) (primitive.ObjectID, bool) {
 			exception.ThrowBusinessError(common.DatabaseErrorCode)
 		}
 	}
-	return tag.ID, tag.Used
+	return tag
 }
 
 // UpdateFishTagStatus update fish tag status

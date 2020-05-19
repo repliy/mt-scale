@@ -41,28 +41,31 @@ func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
 		}
 		return UpdWeightRecord(record)
 	}
-	jsonParam, _ := json.Marshal(param)
-	valdateParam := new(entitys.WeightRecord)
-	json.Unmarshal(jsonParam, valdateParam)
-	validateBoxAndSpec(*valdateParam)
-
-	var tagID primitive.ObjectID
+	// input tag is avliable
+	var tag entitys.FishTag
 	if param.TagName != "" {
-		tagID, used := SelectTagByName(param.TagName)
-		if tagID == primitive.NilObjectID {
+		tag = SelectTagByName(param.TagName)
+		if tag == (entitys.FishTag{}) {
 			tagID = AddTag(entitys.FishTag{
 				SpeciesID: param.SpeciesID,
 				Name:      param.TagName,
 			})
 		}
-		if used {
+		if tag.Used {
 			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
 		}
 	}
-	valdateParam.TagID = tagID
-	valdateParam.CreateTime = time.Now()
-	valdateParam.Creator = ""
-	result, err := col.InsertOne(ctx, valdateParam)
+	jsonParam, _ := json.Marshal(param)
+	entity := new(entitys.WeightRecord)
+	json.Unmarshal(jsonParam, entity)
+
+	entity.TagID = tag.ID
+	nowtime := time.Now()
+	entity.CreateTime = nowtime
+	entity.UpdateTime = nowtime
+	entity.Creator = ""
+
+	result, err := col.InsertOne(ctx, entity)
 	if err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
@@ -76,16 +79,12 @@ func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
 }
 
 // UpdWeightRecord update weight record by index
-func UpdWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
+func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 	col, ctx := Collection("weightrecord")
 	filter := bson.D{
 		primitive.E{
-			Key:   "index",
-			Value: param.Index,
-		},
-		primitive.E{
-			Key:   "task_id",
-			Value: param.TaskID,
+			Key:   "_id",
+			Value: dto.ID,
 		},
 	}
 	var record entitys.WeightRecord
@@ -93,23 +92,26 @@ func UpdWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	validateBoxAndSpec(record)
-	if param.TagID != primitive.NilObjectID && param.TagID != record.TagID {
-		tag := SelectTagByID(param.TagID)
-		if tag == (entitys.FishTag{}) {
-			exception.ThrowBusinessErrorMsg("绑定的Tag不存在")
+	var tagID primitive.ObjectID
+	if dto.TagName != "" {
+		tagID, used := SelectTagByName(dto.TagName)
+		if tagID == primitive.NilObjectID {
+			tagID = AddTag(entitys.FishTag{
+				SpeciesID: dto.SpeciesID,
+				Name:      dto.TagName,
+			})
 		}
-		if tag.Used {
+		if used {
 			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
 		}
 	}
 	update := bson.D{
 		primitive.E{
 			Key: "$set", Value: bson.M{
-				"weight":        param.Weight,
-				"box_id":        param.BoxID,
-				"species_id":    param.SpeciesID,
-				"tag_id":        param.TagID,
+				"weight":        dto.Weight,
+				"box_id":        dto.BoxID,
+				"species_id":    dto.SpeciesID,
+				"tag_id":        tagID,
 				"update_time":   time.Now(),
 				"last_operator": "",
 			},
@@ -119,7 +121,9 @@ func UpdWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	if param.TagID != primitive.NilObjectID && param.TagID != record.TagID {
+	// Tag
+
+	if dto.TagName != "" && dto.TagName != record. {
 		// restore origin tag
 		UpdateFishTagStatus(record.TagID, false)
 		// flag new tag is used
