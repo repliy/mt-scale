@@ -300,9 +300,10 @@ export default {
     record() {
       const speciesId = this.speciesItems[this.specSeleIndex].id
       const boxId = this.boxItems[this.boxSeleIndex].id
-      this.$emit('weightRecord', {
+      this.$emit('recordAction', {
         species_id: speciesId,
-        box_id: boxId
+        box_id: boxId,
+        tag_name: this.specTag
       })
     },
     getSpeciesInfo() {
@@ -358,7 +359,6 @@ export default {
       const _this = this
       this.loading = false
       setTimeout(() => {
-        console.log('timeout functioin')
         _this.bindAlert = false
         _this.bindBoxTagError = ''
       }, 1500)

@@ -6,11 +6,13 @@
     height=480
     @click:row="itemExpand"
     :headers="headers"
-    :items="desserts"
+    :items="tableData"
     single-expand
     :expanded.sync="expanded"
     item-key="name"
     calculate-widths
+    :loading="loading"
+    :loading-text="loadingText"
   >
     <template v-slot:expanded-item="{ item }">
       <td :colspan="100">
@@ -38,13 +40,13 @@
           <v-col cols="3">
             <v-icon
               class="d-inline"
-              :color="getColor(item.name)"
+              :color="getColor(item.species)"
             >mdi-label</v-icon>
           </v-col>
           <v-col>
             <div style="height: 37px;">
-              <p class="ma-0 species-color-tag">Sea Cucumber</p>
-              <p class="ma-0 species-color-tag">537bl</p>
+              <p class="ma-0 species-color-tag">{{item.species}}</p>
+              <p class="ma-0 species-color-tag">{{item.tags}}</p>
             </div>
           </v-col>
         </v-row>
@@ -57,9 +59,12 @@
 </template>
 
 <script>
+import { FetchWeightRecord } from '@/core/api/record.js'
 export default {
   data() {
     return {
+      loading: false,
+      loadingText: 'Loading...Please wait...',
       expanded: [],
       headers: [
         {
@@ -71,24 +76,13 @@ export default {
         { text: 'name', value: 'name' },
         { text: 'weight', value: 'weight' }
       ],
-      desserts: [
-        {
-          index: 1,
-          name: 'Sea Cucumber',
-          weight: '342'
-        },
-        {
-          index: 2,
-          name: 'Snow crab',
-          weight: '195'
-        },
-        {
-          index: 3,
-          name: 'Bluefin tuna',
-          weight: '238'
-        }
-      ]
+      tableData: []
     }
+  },
+  mounted() {
+    this.$on('taskReady', (data) => {
+      this.getWeightRecord(data)
+    })
   },
   methods: {
     itemExpand(item, value) {
@@ -102,6 +96,20 @@ export default {
     },
     itemDel(item) {
 
+    },
+    getWeightRecord(param) {
+      this.loading = true
+      FetchWeightRecord(param).then((response) => {
+        this.loading = false
+        this.tableData = response.data
+        if (this.tableData[0]) {
+          this.$store.commit('SET_RECORD_INDEX', this.tableData[0].index)
+          this.$emit('recordTabChange', {})
+        }
+      }).catch((err) => {
+        this.loading = false
+        console.log(err)
+      })
     }
   }
 }

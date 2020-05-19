@@ -1,4 +1,4 @@
-import task from './task'
+import task from './record'
 
 const modules = {
   task

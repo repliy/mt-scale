@@ -15,7 +15,7 @@
         <input
           readonly
           class="weight_input"
-          value="123"
+          :value="weight"
         />
         <v-divider darkr></v-divider>
       </v-col>
@@ -29,7 +29,7 @@
       align="end"
       no-gutters
     >
-      <Keyboard />
+      <Keyboard v-on:kbClick="kbClick"></Keyboard>
     </v-row>
   </div>
 </template>
@@ -39,12 +39,35 @@ import Keyboard from '@/components/recording/Keyboard.vue'
 export default {
   name: 'Weight',
   data: () => ({
-    index: 69
+    index: 0,
+    weight: '0'
   }),
   components: {
     Keyboard
   },
-  methods: {}
+  methods: {
+    kbClick(data) {
+      let tmpNum
+      if (data.num >= 0) {
+        if (data.num === 0 && this.weight === '0') {
+          return
+        }
+        if (this.weight.substr(0, 1) === '0') {
+          tmpNum = this.weight.substr(1, this.weight.length - 1)
+        } else {
+          tmpNum = this.weight
+        }
+        tmpNum += data.num.toString()
+      } else {
+        tmpNum = this.weight.substr(0, this.weight.length - 1)
+      }
+      if (tmpNum.length === 0) {
+        tmpNum = '0'
+      }
+      this.weight = tmpNum
+      this.$emit('realWeight', this.weight)
+    }
+  }
 }
 </script>
 <style scoped>
@@ -60,6 +83,7 @@ export default {
   width: 183px;
   height: 100px;
   padding: 0px;
+  text-align: right;
 }
 .keyboard-layout {
   height: 39vh;

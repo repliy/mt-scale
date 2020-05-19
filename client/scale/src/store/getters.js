@@ -1,4 +1,5 @@
 const getters = {
-  taskId: state => state.task.taskId
+  taskId: state => state.record.taskId,
+  recordIndex: state => state.record.recordIndex
 }
 export default getters
