@@ -14,13 +14,13 @@ import (
 
 // AddWeightRecord path: record/crt {}
 func AddWeightRecord(ctx *gin.Context) interface{} {
-	var record entitys.WeightRecord
-	if err := ctx.ShouldBindJSON(&record); err != nil {
+	var dto dto.AddWeightRecordDto
+	if err := ctx.ShouldBindJSON(&dto); err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
-	utils.ValidateStructParams(record)
-	return models.AddWeightRecord(record)
+	utils.ValidateStructParams(dto)
+	return models.AddWeightRecord(dto)
 }
 
 // GetWeightRecord path: record/fetch?box_id=&species_id=&index=&page_num=&page_size=

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"mt-scale/common"
 	"mt-scale/entitys"
 	"mt-scale/exception"
@@ -14,7 +15,7 @@ import (
 )
 
 // AddWeightRecord record weight one time
-func AddWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
+func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
 	col, ctx := Collection("weightrecord")
 	filter := bson.D{
 		primitive.E{
@@ -33,27 +34,44 @@ func AddWeightRecord(param entitys.WeightRecord) primitive.ObjectID {
 	}
 	if cur.Next(ctx) {
 		// override record first
-		return UpdWeightRecord(param)
-	}
-	validateBoxAndSpec(param)
-	if param.TagID != primitive.NilObjectID {
-		tag := SelectTagByID(param.TagID)
-		if tag == (entitys.FishTag{}) {
-			exception.ThrowBusinessErrorMsg("绑定的Tag不存在")
+		var record entitys.WeightRecord
+		if err := cur.Decode(&record); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
 		}
-		if tag.Used {
+		return UpdWeightRecord(record)
+	}
+	jsonParam, _ := json.Marshal(param)
+	valdateParam := new(entitys.WeightRecord)
+	json.Unmarshal(jsonParam, valdateParam)
+	validateBoxAndSpec(*valdateParam)
+
+	var tagID primitive.ObjectID
+	if param.TagName != "" {
+		tagID, used := SelectTagByName(param.TagName)
+		if tagID == primitive.NilObjectID {
+			tagID = AddTag(entitys.FishTag{
+				SpeciesID: param.SpeciesID,
+				Name:      param.TagName,
+			})
+		}
+		if used {
 			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
 		}
 	}
-	param.CreateTime = time.Now()
-	param.Creator = ""
-	result, err := col.InsertOne(ctx, param)
+	valdateParam.TagID = tagID
+	valdateParam.CreateTime = time.Now()
+	valdateParam.Creator = ""
+	result, err := col.InsertOne(ctx, valdateParam)
 	if err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	// flag tag is used
-	UpdateFishTagStatus(param.TagID, true)
+	if tagID != primitive.NilObjectID {
+		// flag tag is used
+		UpdateFishTagStatus(tagID, true)
+	}
+
 	return result.InsertedID.(primitive.ObjectID)
 }
 
@@ -138,7 +156,13 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 	}
 	limit := int64(pageSize)
 	skip := int64((pageNum - 1) * pageSize)
+	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
 	filter := []bson.M{
+		{
+			"$match": bson.M{
+				"task_id": taskBsonID,
+			},
+		},
 		{
 			"$lookup": bson.M{
 				"from":         "species",
@@ -188,12 +212,6 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 			"$limit": limit,
 		},
 	}
-	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
-	filter = append(filter, primitive.M{
-		"$match": primitive.M{
-			"task_id": taskBsonID,
-		},
-	})
 	if dto.BoxID != "" {
 		boxBsonID, _ := primitive.ObjectIDFromHex(dto.BoxID)
 		filter = append(filter, primitive.M{

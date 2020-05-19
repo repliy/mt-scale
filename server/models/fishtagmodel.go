@@ -29,6 +29,7 @@ func AddTag(tag entitys.FishTag) primitive.ObjectID {
 	tag.CreateTime = timeNow
 	tag.UpdateTime = timeNow
 	tag.Creator = ""
+	tag.Used = false
 
 	result, err := col.InsertOne(ctx, tag)
 	if err != nil {
@@ -57,6 +58,30 @@ func SelectTagByID(id primitive.ObjectID) entitys.FishTag {
 		}
 	}
 	return tag
+}
+
+// SelectTagByName Select tag by tag name
+func SelectTagByName(name string) (primitive.ObjectID, bool) {
+	col, ctx := Collection("fishtag")
+	filter := bson.D{
+		primitive.E{
+			Key:   "name",
+			Value: name,
+		},
+	}
+	cur, err := col.Find(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var tag entitys.FishTag
+	if cur.Next(ctx) {
+		if err := cur.Decode(&tag); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+	}
+	return tag.ID, tag.Used
 }
 
 // UpdateFishTagStatus update fish tag status
