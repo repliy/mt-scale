@@ -88,7 +88,7 @@
     >
       <v-container>
         <v-row no-gutters>
-          <template v-for="(box, n) in BoxItems">
+          <template v-for="(box, n) in boxItems">
             <v-col
               :key="n"
               cols="6"
@@ -189,27 +189,27 @@
               <v-text-field
                 label="小号*"
                 required
-                v-model="BoxItems[0].num"
+                v-model="boxItems[0].num"
               ></v-text-field>
               <v-text-field
                 label="中号*"
                 required
-                v-model="BoxItems[1].num"
+                v-model="boxItems[1].num"
               ></v-text-field>
               <v-text-field
                 label="大号*"
-                v-model="BoxItems[2].num"
+                v-model="boxItems[2].num"
                 required
               ></v-text-field>
               <v-text-field
                 label="特大*"
                 required
-                v-model="BoxItems[3].num"
+                v-model="boxItems[3].num"
               ></v-text-field>
               <v-text-field
                 label="特殊*"
                 required
-                v-model="BoxItems[4].num"
+                v-model="boxItems[4].num"
               ></v-text-field>
             </v-container>
           </v-card-text>
@@ -240,7 +240,7 @@
 
 <script>
 import { getSpecies } from '@/core/api/species.js'
-import { createBoxList } from '@/core/api/box.js'
+import { createBoxList, getLatestBoxes } from '@/core/api/box.js'
 
 export default {
   data: () => ({
@@ -257,7 +257,7 @@ export default {
     weight: 352,
     bindAlert: false,
     bindBoxTagError: '',
-    BoxItems: [
+    boxItems: [
       {
         id: '',
         type: 's',
@@ -292,20 +292,40 @@ export default {
   }),
   mounted() {
     this.getSpeciesInfo()
+    this.$on('taskReady', (data) => {
+      this.getBoxInfo(data)
+    })
   },
   methods: {
     record() {
       const speciesId = this.speciesItems[this.specSeleIndex].id
-      const boxId = this.BoxItems[this.boxSeleIndex].id
+      const boxId = this.boxItems[this.boxSeleIndex].id
       this.$emit('weightRecord', {
         species_id: speciesId,
         box_id: boxId
       })
     },
     getSpeciesInfo() {
-      getSpecies().then((response) => {
+      getSpecies({
+        task_id: ''
+      }).then((response) => {
         this.speciesItems = response.data
       }).catch((err) => { console.log(err) })
+    },
+    getBoxInfo(data) {
+      getLatestBoxes(data).then((response) => {
+        const recordList = response.data
+        for (const record of recordList) {
+          for (const local of this.boxItems) {
+            if (local.type === record.box_type) {
+              local.id = record.box_id
+              local.num = record.box_num
+            }
+          }
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
     },
     editSpeciesTag(index) {
       console.log(index)
@@ -349,7 +369,7 @@ export default {
       this.loading = true
       const params = []
       const boxNums = []
-      for (const item of this.BoxItems) {
+      for (const item of this.boxItems) {
         if (item.num) {
           if (boxNums.indexOf(item.num) !== -1) {
             // find same box num
@@ -368,7 +388,7 @@ export default {
         this.boxDialog = false
         const binds = response.data
         for (const bind of binds) {
-          for (const box of this.BoxItems) {
+          for (const box of this.boxItems) {
             if (bind.box_num === box.num && bind.box_type === box.type) {
               // same box
               box.id = bind.box_id

@@ -10,3 +10,14 @@ export function createBoxList(params) {
     data: params
   })
 }
+
+/**
+ * get latest boxes
+ */
+export function getLatestBoxes(query) {
+  return request({
+    url: '/api/box/latestbox',
+    method: 'get',
+    params: query
+  })
+}

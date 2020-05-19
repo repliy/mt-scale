@@ -25,7 +25,7 @@
     </v-col>
     <v-col cols="4">
       <div class="right-height">
-        <Option class="layout-border pt-3" v-on:weightRecord="weightRecord"></Option>
+        <Option ref="option" class="layout-border pt-3" v-on:weightRecord="weightRecord"></Option>
       </div>
     </v-col>
   </v-row>
@@ -50,11 +50,16 @@ export default {
   },
   mounted() {
     this.getTask()
+    console.log('11111', this.$refs)
   },
   methods: {
     getTask() {
       getLatestTask().then((response) => {
         this.$store.commit('SET_TASK_ID', response.data)
+        // notify option
+        this.$refs.option.$emit('taskReady', {
+          task_id: response.data
+        })
       }).catch((err) => {
         console.log(err)
       })
