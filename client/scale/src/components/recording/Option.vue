@@ -169,7 +169,15 @@
           color="primary"
           text-color="white"
           @click="record"
+          v-if="!editMode"
         >记录</v-btn>
+        <v-btn
+          height="40"
+          color="primary"
+          text-color="white"
+          @click="update"
+          v-else
+        >更新</v-btn>
       </v-col>
     </v-row>
     <!--add box tag dialog-->
@@ -244,6 +252,7 @@ import { createBoxList, getLatestBoxes } from '@/core/api/box.js'
 
 export default {
   data: () => ({
+    editMode: false,
     loading: false,
     // species
     tagDialog: false,
@@ -300,7 +309,16 @@ export default {
     record() {
       const speciesId = this.speciesItems[this.specSeleIndex].id
       const boxId = this.boxItems[this.boxSeleIndex].id
-      this.$emit('recordAction', {
+      this.$emit('addRecord', {
+        species_id: speciesId,
+        box_id: boxId,
+        tag_name: this.specTag
+      })
+    },
+    update() {
+      const speciesId = this.speciesItems[this.specSeleIndex].id
+      const boxId = this.boxItems[this.boxSeleIndex].id
+      this.$emit('updateRecord', {
         species_id: speciesId,
         box_id: boxId,
         tag_name: this.specTag

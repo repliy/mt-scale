@@ -204,12 +204,31 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 			},
 		},
 		{
+			"$lookup": bson.M{
+				"from":         "box",
+				"localField":   "box_id",
+				"foreignField": "_id",
+				"as":           "boxes",
+			},
+		},
+		{
+			"$unwind": bson.M{
+				"path":                       "$boxes",
+				"preserveNullAndEmptyArrays": true,
+			},
+		},
+		{
 			"$project": bson.M{
-				"_id":     1,
-				"weight":  1,
-				"index":   1,
-				"tag":     "$tags.name",
-				"species": "$species.name",
+				"_id":        1,
+				"weight":     1,
+				"index":      1,
+				"tag_id":     1,
+				"tag":        "$tags.name",
+				"species_id": 1,
+				"species":    "$species.name",
+				"box_id":     1,
+				"box_type":   "$boxes.type",
+				"box_num":    "$boxes.num",
 			},
 		},
 		{
@@ -260,6 +279,7 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 			syslog.Error(err)
 			exception.ThrowBusinessError(common.DatabaseErrorCode)
 		}
+		syslog.Error(row.TagID)
 		result = append(result, row)
 	}
 	return result

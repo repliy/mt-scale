@@ -137,6 +137,7 @@ export default {
     },
     itemEdit(item) {
       this.editRecord = item
+      this.$emit('editRecordTabItem', item)
     },
     itemDel(item) {
       this.delRecord = item

@@ -19,6 +19,7 @@
               ref="recordTab"
               class="layout-border ml-3 mr-3"
               v-on:recordTabChange="recordTabChange"
+              v-on:editRecordTabItem="editRecordTabItem"
             ></RecordTab>
           </v-col>
           <v-col cols="7">
@@ -36,14 +37,19 @@
         <Option
           ref="option"
           class="layout-border pt-3"
-          v-on:recordAction="recordAction"
+          v-on:addRecord="addRecord"
+          v-on:updateRecord="updateRecord"
         ></Option>
       </div>
     </v-col>
-    <v-overlay :value="loading">
+    <v-overlay
+      light
+      :value="loading"
+      opacity="0.23"
+    >
       <v-progress-circular
         indeterminate
-        size="64"
+        size="48"
       ></v-progress-circular>
     </v-overlay>
   </v-row>
@@ -54,13 +60,14 @@ import RecordTab from '@/components/recording/RecordTab.vue'
 import Weight from '@/components/recording/Weight.vue'
 import Option from '@/components/recording/Option.vue'
 import { getLatestTask } from '@/core/api/task.js'
-import { AddWeightRecord } from '@/core/api/record.js'
+import { AddWeightRecord, UpdWeightRecord } from '@/core/api/record.js'
 
 export default {
   name: 'Recording',
   data: () => ({
-    loading: false,
-    weightNum: ''
+    loading: true,
+    weightNum: '',
+    editItem: null
   }),
   components: {
     RecordStatistics,
@@ -90,16 +97,37 @@ export default {
         console.log(err)
       })
     },
-    // tap record button, take species_id, box_id
-    recordAction(data) {
+    // add new record
+    addRecord(data) {
+      this.loading = true
       const params = Object.assign(data)
-      params.task_id = this.$store.getters.getTaskId
+      params.task_id = this.$store.getters.taskId
       params.index = this.$refs.weight.index
       params.weight = Number(this.weightNum)
       AddWeightRecord(params).then((response) => {
         console.log(response.data)
+        this.loading = false
       }).catch((error) => {
         console.log(error)
+        this.loading = false
+      })
+    },
+    // edit record
+    updateRecord(data) {
+      console.log('updateRecord')
+      this.loading = true
+      const params = Object.assign(data)
+      params.index = this.$refs.weight.index
+      params.weight = Number(this.weightNum)
+      params.id = this.editItem.id
+      console.log(params)
+      UpdWeightRecord(params).then((response) => {
+        this.loading = false
+        this.switchEditMode()
+      }).catch((error) => {
+        console.log(error)
+        this.loading = false
+        this.switchEditMode()
       })
     },
     // realtime weight output
@@ -109,8 +137,39 @@ export default {
     },
     // record table data change
     recordTabChange() {
-      const curIndex = this.$store.getters.getRecordIndex
+      const curIndex = this.$store.getters.recordIndex
       this.$refs.weight.index = curIndex + 1
+    },
+    // click record table item
+    editRecordTabItem(item) {
+      this.editItem = item
+      this.$refs.weight.index = item.index
+      this.$refs.weight.weight = item.weight.toString()
+      this.$refs.option.specTag = item.tag
+      // species
+      const specItems = this.$refs.option.speciesItems
+      for (let i = 0; i < specItems.length; i++) {
+        if (specItems[i].name === item.species) {
+          this.$refs.option.specSeleIndex = i
+          break
+        }
+      }
+      // box
+      const boxItems = this.$refs.option.boxItems
+      for (let i = 0; i < boxItems.length; i++) {
+        if (boxItems[i].type === item.box_type) {
+          this.$refs.option.boxSeleIndex = i
+          boxItems[i].id = item.box_id
+          boxItems[i].num = item.box_num
+          break
+        }
+      }
+      this.switchEditMode()
+    },
+    // option edit mode
+    switchEditMode() {
+      console.log(this.$refs.recordTab)
+      this.$refs.option.editMode = !this.$refs.option.editMode
     }
   }
 }

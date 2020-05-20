@@ -12,6 +12,17 @@ export function AddWeightRecord(params) {
 }
 
 /**
+ * update a weight record
+ */
+export function UpdWeightRecord(params) {
+  return request({
+    url: '/api/record/upd',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * get weight record list
  */
 export function FetchWeightRecord(query) {
