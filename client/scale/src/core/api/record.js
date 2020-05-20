@@ -21,3 +21,14 @@ export function FetchWeightRecord(query) {
     params: query
   })
 }
+
+/**
+ * delete weight record
+ */
+export function DeleteWeightRecord(params) {
+  return request({
+    url: '/api/record/del',
+    method: 'post',
+    data: params
+  })
+}

@@ -2,7 +2,6 @@ package ctrls
 
 import (
 	"mt-scale/common"
-	"mt-scale/entitys"
 	"mt-scale/exception"
 	"mt-scale/models"
 	"mt-scale/models/dto"
@@ -35,7 +34,7 @@ func GetWeightRecord(ctx *gin.Context) interface{} {
 
 // UpdateWeightRecord path: record/upd
 func UpdateWeightRecord(ctx *gin.Context) interface{} {
-	var record entitys.WeightRecord
+	var record dto.UpdWeightRecordDto
 	if err := ctx.ShouldBindJSON(&record); err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)

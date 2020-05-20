@@ -1,7 +1,7 @@
-import task from './record'
+import record from './record'
 
 const modules = {
-  task
+  record
 }
 
 export default modules

@@ -39,14 +39,23 @@ func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
 			syslog.Error(err)
 			exception.ThrowBusinessError(common.DatabaseErrorCode)
 		}
-		return UpdWeightRecord(record)
+		tag := SelectTagByID(record.ID)
+		updRecord := dto.UpdWeightRecordDto{
+			ID:        record.ID,
+			Weight:    record.Weight,
+			BoxID:     record.BoxID,
+			SpeciesID: record.SpeciesID,
+			Index:     record.Index,
+			TagName:   tag.Name,
+		}
+		return UpdWeightRecord(updRecord)
 	}
 	// input tag is avliable
 	var tag entitys.FishTag
 	if param.TagName != "" {
 		tag = SelectTagByName(param.TagName)
 		if tag == (entitys.FishTag{}) {
-			tagID = AddTag(entitys.FishTag{
+			tag.ID = AddTag(entitys.FishTag{
 				SpeciesID: param.SpeciesID,
 				Name:      param.TagName,
 			})
@@ -70,9 +79,9 @@ func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	if tagID != primitive.NilObjectID {
+	if tag.ID != primitive.NilObjectID {
 		// flag tag is used
-		UpdateFishTagStatus(tagID, true)
+		UpdateFishTagStatus(tag.ID, true)
 	}
 
 	return result.InsertedID.(primitive.ObjectID)
@@ -92,16 +101,16 @@ func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	var tagID primitive.ObjectID
+	var tag entitys.FishTag
 	if dto.TagName != "" {
-		tagID, used := SelectTagByName(dto.TagName)
-		if tagID == primitive.NilObjectID {
-			tagID = AddTag(entitys.FishTag{
+		tag = SelectTagByName(dto.TagName)
+		if tag == (entitys.FishTag{}) {
+			tag.ID = AddTag(entitys.FishTag{
 				SpeciesID: dto.SpeciesID,
 				Name:      dto.TagName,
 			})
 		}
-		if used {
+		if tag.Used {
 			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
 		}
 	}
@@ -111,7 +120,7 @@ func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 				"weight":        dto.Weight,
 				"box_id":        dto.BoxID,
 				"species_id":    dto.SpeciesID,
-				"tag_id":        tagID,
+				"tag_id":        tag.ID,
 				"update_time":   time.Now(),
 				"last_operator": "",
 			},
@@ -121,13 +130,12 @@ func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	// Tag
-
-	if dto.TagName != "" && dto.TagName != record. {
+	// change tag
+	if record.TagID != tag.ID {
 		// restore origin tag
 		UpdateFishTagStatus(record.TagID, false)
 		// flag new tag is used
-		UpdateFishTagStatus(param.TagID, true)
+		UpdateFishTagStatus(tag.ID, true)
 	}
 	return record.ID
 }
