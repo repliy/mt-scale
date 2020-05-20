@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import { StatWeight } from '@/core/api/record.js'
 export default {
   name: 'RecordStatistics',
   data() {

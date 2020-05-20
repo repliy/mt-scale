@@ -1,3 +1,4 @@
+ /* jshint esversion: 6 */
 import request from '@/core/request'
 
 /**
@@ -41,5 +42,16 @@ export function DeleteWeightRecord(params) {
     url: '/api/record/del',
     method: 'post',
     data: params
+  })
+}
+
+/**
+ * statis weight
+ */
+export function StatWeight(query) {
+  return request({
+    url: '/api/stat/weight',
+    method: 'get',
+    params: query
   })
 }
