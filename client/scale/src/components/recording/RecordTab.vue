@@ -7,7 +7,7 @@
       hide-default-header
       hide-default-footer
       height=480
-      @click:row="itemExpand"
+      @click:row="tabItemClick"
       single-expand
       :expanded.sync="expanded"
       item-key="index"
@@ -108,6 +108,7 @@ export default {
       loadingText: 'Loading...Please wait...',
       delRecord: null,
       editRecord: null,
+      clickItem: null,
       expanded: [],
       headers: [
         {
@@ -131,8 +132,10 @@ export default {
     })
   },
   methods: {
-    itemExpand(item, value) {
+    tabItemClick(item, value) {
       value.expand(!value.isExpanded)
+      this.clickItem = value
+      console.log('this.clickItem', this.clickItem)
     },
     getColor(name) {
       return 'red'
@@ -162,6 +165,9 @@ export default {
     },
     getWeightRecord() {
       this.loading = true
+      if (this.clickItem) {
+        this.clickItem.expand(false)
+      }
       FetchWeightRecord({
         task_id: this.$store.getters.taskId
       }).then((response) => {

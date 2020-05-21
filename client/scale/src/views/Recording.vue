@@ -5,7 +5,10 @@
   >
     <v-col cols="8">
       <div class="top-height pa-3">
-        <RecordStatistics ref="stat" class="layout-border"></RecordStatistics>
+        <RecordStatistics
+          ref="stat"
+          class="layout-border"
+        ></RecordStatistics>
       </div>
       <div class="bottom-height">
         <v-row
@@ -42,6 +45,7 @@
         ></Option>
       </div>
     </v-col>
+    <!--loading-->
     <v-overlay
       light
       :value="loading"
@@ -52,6 +56,15 @@
         size="48"
       ></v-progress-circular>
     </v-overlay>
+    <!--error message-->
+    <v-alert
+      type="error"
+      class="pg-alert"
+      transition="slide-y-transition"
+      :value="showError"
+    >
+      {{errorMessage}}
+    </v-alert>
   </v-row>
 </template>
 <script>
@@ -65,7 +78,9 @@ import { AddWeightRecord, UpdWeightRecord } from '@/core/api/record.js'
 export default {
   name: 'Recording',
   data: () => ({
-    loading: true,
+    showError: false,
+    errorMessage: '',
+    loading: false,
     weightNum: '',
     editItem: null
   }),
@@ -85,11 +100,11 @@ export default {
         this.loading = false
         this.$store.commit('SET_TASK_ID', response.data)
         // notify option
-        this.$refs.option.$emit('taskReady', {})
+        this.$refs.option.$emit('taskReady')
         // notify record table
-        this.$refs.recordTab.$emit('taskReady', {})
+        this.$refs.recordTab.$emit('taskReady')
         // notify stat
-        this.$refs.stat.$emit('taskReady', {})
+        this.$refs.stat.$emit('taskReady')
       }).catch((err) => {
         this.loading = false
         console.log(err)
@@ -103,7 +118,7 @@ export default {
       params.index = this.$refs.weight.index
       params.weight = Number(this.weightNum)
       AddWeightRecord(params).then((response) => {
-        this.$refs.recordTab.$emit('refreshData', {})
+        this.$refs.recordTab.$emit('refreshData')
         this.loading = false
       }).catch((error) => {
         console.log(error)
@@ -121,7 +136,7 @@ export default {
       UpdWeightRecord(params).then((response) => {
         this.loading = false
         this.switchEditMode()
-        this.$refs.recordTab.$emit('refreshData', {})
+        this.$refs.recordTab.$emit('refreshData')
       }).catch((error) => {
         console.log(error)
         this.loading = false
@@ -131,7 +146,6 @@ export default {
     // realtime weight output
     realWeight(val) {
       this.weightNum = val
-      console.log('recording:', this.weightNum)
     },
     // record table data change
     recordTabChange() {
@@ -166,8 +180,15 @@ export default {
     },
     // option edit mode
     switchEditMode() {
-      console.log(this.$refs.recordTab)
       this.$refs.option.editMode = !this.$refs.option.editMode
+    },
+    tipErrorMessage(msg) {
+      const _this = this
+      this.errorMessage = msg
+      this.showError = true
+      setTimeout(function() {
+        _this.showError = false
+      }, 3000)
     }
   }
 }
@@ -187,5 +208,10 @@ export default {
 }
 .layout-border {
   border: 1px solid rgba(187, 187, 187, 1);
+}
+.pg-alert {
+  width: 100vw;
+  position: absolute;
+  top: 0;
 }
 </style>
