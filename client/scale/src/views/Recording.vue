@@ -5,7 +5,7 @@
   >
     <v-col cols="8">
       <div class="top-height pa-3">
-        <RecordStatistics class="layout-border"></RecordStatistics>
+        <RecordStatistics ref="stat" class="layout-border"></RecordStatistics>
       </div>
       <div class="bottom-height">
         <v-row
@@ -90,6 +90,10 @@ export default {
         })
         // notify record table
         this.$refs.recordTab.$emit('taskReady', {
+          task_id: response.data
+        })
+        // notify stat
+        this.$refs.stat.$emit('taskReady', {
           task_id: response.data
         })
       }).catch((err) => {

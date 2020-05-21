@@ -279,7 +279,6 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 			syslog.Error(err)
 			exception.ThrowBusinessError(common.DatabaseErrorCode)
 		}
-		syslog.Error(row.TagID)
 		result = append(result, row)
 	}
 	return result

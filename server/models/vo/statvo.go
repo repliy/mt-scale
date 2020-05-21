@@ -4,6 +4,7 @@ package vo
 type StatBoxWeightVo struct {
 	Type   string  `json:"type"`
 	Weight float32 `json:"weight"`
+	Name   string  `json:"name"`
 }
 
 // StatSpecWeightVo Statistical species weight vo

@@ -123,7 +123,6 @@ export default {
     }
   },
   mounted() {
-    console.log('store', this.$store)
     this.$on('taskReady', (data) => {
       this.getWeightRecord(data)
     })

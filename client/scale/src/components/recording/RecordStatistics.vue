@@ -8,7 +8,7 @@
           <v-card-text>
             <div class="weight-tag-font">总重量</div>
             <p class="display-1 weight-font">
-              123,456 <span class="wight-unit-font">bl</span>
+              {{weight}} <span class="wight-unit-font">bl</span>
             </p>
           </v-card-text>
         </v-card>
@@ -24,7 +24,7 @@
             no-gutters
             class="mt-5"
           >
-            <template v-for="n in 7">
+            <template v-for="(item, n) in speciesData">
               <v-col
                 :key="n"
                 cols="4"
@@ -47,15 +47,15 @@
                     </v-col>
                     <v-col>
                       <div style="height: 37px;">
-                        <p class="ma-0 species-color-tag">Sea Cucumber</p>
-                        <p class="ma-0 species-color-tag">537bl</p>
+                        <p class="ma-0 species-color-tag">{{item.name}}</p>
+                        <p class="ma-0 species-color-tag">{{item.weight}}bl</p>
                       </div>
                     </v-col>
                   </v-row>
                 </div>
               </v-col>
               <v-responsive
-                v-if="n % 3 === 0"
+                v-if="(n + 1) % 3 === 0"
                 :key="`width-${n}`"
                 width="100%"
               ></v-responsive>
@@ -74,7 +74,7 @@
             no-gutters
             class="mt-5"
           >
-            <template v-for="n in 5">
+            <template v-for="(item, n) in boxData">
               <v-col
                 :key="n"
                 cols="4"
@@ -87,11 +87,11 @@
                   <p
                     style="line-height: 37px;"
                     class="ml-2"
-                  >{{boxName}}:{{weight}}lb</p>
+                  >{{item.type}}:{{item.weight}} lb</p>
                 </div>
               </v-col>
               <v-responsive
-                v-if="n % 3 === 0"
+                v-if="(n + 1) % 3 === 0"
                 :key="`width-${n}`"
                 width="100%"
               ></v-responsive>
@@ -109,17 +109,35 @@ export default {
   data() {
     return {
       boxName: '大号',
-      weight: 2108,
-      speciesShow: true
+      speciesShow: true,
+      weight: 0,
+      speciesData: [],
+      boxData: []
     }
   },
   components: {},
+  mounted() {
+    this.$on('taskReady', (data) => {
+      this.getStatInfo(data)
+    })
+  },
   methods: {
     switchCard() {
       this.speciesShow = !this.speciesShow
     },
     getSpeciesTagColor() {
       return 'green'
+    },
+    getStatInfo(params) {
+      StatWeight(params).then((response) => {
+        console.log(response.data)
+        const retData = response.data
+        this.speciesData = retData.species
+        this.boxData = retData.box
+        this.weight = retData.total.weight
+      }).catch((error) => {
+        console.log(error)
+      })
     }
   }
 }

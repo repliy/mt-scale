@@ -93,16 +93,16 @@ func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 			},
 		},
 		{
-			"$match": bson.M{
-				"task_id": taskID,
-			},
-		},
-		{
 			"$unwind": bson.M{
 				"path":                       "$weights",
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
+		// {
+		// 	"$match": bson.M{
+		// 		"weights.task_id": taskID,
+		// 	},
+		// },
 		{
 			"$group": bson.M{
 				"_id": "$name",
