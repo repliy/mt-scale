@@ -28,6 +28,7 @@ service:
     - /stat/weight
     - /tag/crt
     - /task/latest
+    - /task/status/upd
     - /favicon.ico
 
 router:

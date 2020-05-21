@@ -4,6 +4,7 @@ import (
 	"mt-scale/common"
 	"mt-scale/entitys"
 	"mt-scale/exception"
+	"mt-scale/models/dto"
 	"mt-scale/syslog"
 	"time"
 
@@ -59,4 +60,29 @@ func GetCurrentTask() primitive.ObjectID {
 		return row.ID
 	}
 	return AddTask()
+}
+
+// UpdTaskStatus Update task status(start/complete)
+func UpdTaskStatus(dto dto.TaskUpdDto) {
+	col, ctx := Collection("task")
+	filter := bson.D{
+		primitive.E{
+			Key:   "_id",
+			Value: dto.ID,
+		},
+	}
+	update := bson.D{
+		primitive.E{
+			Key: "$set",
+			Value: bson.M{
+				"status":        dto.Status,
+				"update_time":   time.Now(),
+				"last_operator": "",
+			},
+		},
+	}
+	if _, err := col.UpdateOne(ctx, filter, update); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
 }

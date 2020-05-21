@@ -102,6 +102,7 @@ func SetupRouter() *gin.Engine {
 	// task
 	taskRouter := Router.Group("/task")
 	taskRouter.GET("/latest", wrapper(ctrls.GetCurrentTask))
+	taskRouter.POST("/status/upd", wrapper(ctrls.UpdTaskStatus))
 
 	return Router
 }

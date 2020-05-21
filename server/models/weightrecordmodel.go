@@ -116,7 +116,8 @@ func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 	}
 	update := bson.D{
 		primitive.E{
-			Key: "$set", Value: bson.M{
+			Key: "$set",
+			Value: bson.M{
 				"weight":        dto.Weight,
 				"box_id":        dto.BoxID,
 				"species_id":    dto.SpeciesID,
