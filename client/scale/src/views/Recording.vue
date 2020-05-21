@@ -36,7 +36,7 @@
       <div class="right-height">
         <Option
           ref="option"
-          class="layout-border pt-3"
+          class="layout-border mt-3"
           v-on:addRecord="addRecord"
           v-on:updateRecord="updateRecord"
         ></Option>
@@ -85,17 +85,11 @@ export default {
         this.loading = false
         this.$store.commit('SET_TASK_ID', response.data)
         // notify option
-        this.$refs.option.$emit('taskReady', {
-          task_id: response.data
-        })
+        this.$refs.option.$emit('taskReady', {})
         // notify record table
-        this.$refs.recordTab.$emit('taskReady', {
-          task_id: response.data
-        })
+        this.$refs.recordTab.$emit('taskReady', {})
         // notify stat
-        this.$refs.stat.$emit('taskReady', {
-          task_id: response.data
-        })
+        this.$refs.stat.$emit('taskReady', {})
       }).catch((err) => {
         this.loading = false
         console.log(err)
@@ -109,7 +103,7 @@ export default {
       params.index = this.$refs.weight.index
       params.weight = Number(this.weightNum)
       AddWeightRecord(params).then((response) => {
-        console.log(response.data)
+        this.$refs.recordTab.$emit('refreshData', {})
         this.loading = false
       }).catch((error) => {
         console.log(error)
@@ -118,7 +112,6 @@ export default {
     },
     // edit record
     updateRecord(data) {
-      console.log('updateRecord')
       this.loading = true
       const params = Object.assign(data)
       params.index = this.$refs.weight.index
@@ -128,6 +121,7 @@ export default {
       UpdWeightRecord(params).then((response) => {
         this.loading = false
         this.switchEditMode()
+        this.$refs.recordTab.$emit('refreshData', {})
       }).catch((error) => {
         console.log(error)
         this.loading = false
@@ -189,7 +183,7 @@ export default {
   height: calc(71vh - 64px);
 }
 .right-height {
-  height: calc(99vh - 64px);
+  height: calc(97.5vh - 64px);
 }
 .layout-border {
   border: 1px solid rgba(187, 187, 187, 1);

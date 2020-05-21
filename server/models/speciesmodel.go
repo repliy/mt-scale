@@ -80,6 +80,27 @@ func FetchAllSpeciesInfo() []entitys.Species {
 	return result
 }
 
+// FetchAllStatSpeciesInfo Fetch all stat species vo
+func FetchAllStatSpeciesInfo() []vo.StatSpecWeightVo {
+	col, ctx := Collection("species")
+	filter := bson.D{}
+	cur, err := col.Find(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var result []vo.StatSpecWeightVo
+	for cur.Next(ctx) {
+		var row vo.StatSpecWeightVo
+		if err := cur.Decode(&row); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		result = append(result, row)
+	}
+	return result
+}
+
 // StatSpecieszWeight Statistical weighing record
 func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 	col, ctx := Collection("species")
@@ -98,11 +119,11 @@ func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 				"preserveNullAndEmptyArrays": true,
 			},
 		},
-		// {
-		// 	"$match": bson.M{
-		// 		"weights.task_id": taskID,
-		// 	},
-		// },
+		{
+			"$match": bson.M{
+				"weights.task_id": taskID,
+			},
+		},
 		{
 			"$group": bson.M{
 				"_id": "$name",
@@ -132,5 +153,14 @@ func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 		}
 		result = append(result, row)
 	}
-	return result
+	allSpecies := FetchAllStatSpeciesInfo()
+	for i := range allSpecies {
+		for _, res := range result {
+			if res.Name == allSpecies[i].Name {
+				allSpecies[i].Weight = res.Weight
+			}
+		}
+	}
+
+	return allSpecies
 }

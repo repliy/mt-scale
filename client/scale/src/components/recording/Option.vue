@@ -1,9 +1,15 @@
 <template>
   <div style="margin-right: 12px;height: 100%;">
-    <v-row no-gutters>
+    <v-progress-linear
+      indeterminate
+      :active="specLoading"
+      height="2"
+    >
+    </v-progress-linear>
+    <v-row no-gutters class="mt-3">
       <v-col>
-        <div class="tag_font">物种选择: {{specTag}}</div>
-        <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择物种类型</p>
+        <div class="title-font">物种选择: {{specTag}}</div>
+        <p class="subtitle-font">请选择物种类型</p>
       </v-col>
     </v-row>
     <!--species select-->
@@ -61,7 +67,13 @@
       class="mt-5"
     >
       <v-col adjust="center">
-        <div class="tag_font d-inline">箱子选择:</div>
+        <v-progress-linear
+          indeterminate
+          :active="boxLoading"
+          height="2"
+        >
+        </v-progress-linear>
+        <div class="title-font d-inline">箱子选择:</div>
         <v-btn
           class="ml-5 d-inline"
           small
@@ -77,7 +89,7 @@
       align="end"
     >
       <v-col>
-        <p style="height: 11px;color: rgba(255, 42, 42, 1);font-size: 8px;">请选择箱子类型</p>
+        <p class="subtitle-font">请选择箱子类型</p>
       </v-col>
     </v-row>
     <!--box select-->
@@ -188,7 +200,11 @@
         max-width="350"
       >
         <v-card>
-          <v-alert class="bindBoxAlert" :value="bindAlert" type="error">{{bindBoxTagError}}</v-alert>
+          <v-alert
+            class="bindBoxAlert"
+            :value="bindAlert"
+            type="error"
+          >{{bindBoxTagError}}</v-alert>
           <v-card-title>
             <span class="headline">绑定箱子号</span>
           </v-card-title>
@@ -235,12 +251,6 @@
             >Save</v-btn>
           </v-card-actions>
         </v-card>
-        <v-overlay :value="loading">
-          <v-progress-circular
-            indeterminate
-            size="64"
-          ></v-progress-circular>
-        </v-overlay>
       </v-dialog>
     </v-row>
   </div>
@@ -253,7 +263,8 @@ import { createBoxList, getLatestBoxes } from '@/core/api/box.js'
 export default {
   data: () => ({
     editMode: false,
-    loading: false,
+    specLoading: false,
+    boxLoading: false,
     // species
     tagDialog: false,
     speciesItems: [],
@@ -301,8 +312,8 @@ export default {
   }),
   mounted() {
     this.getSpeciesInfo()
-    this.$on('taskReady', (data) => {
-      this.getBoxInfo(data)
+    this.$on('taskReady', () => {
+      this.getBoxInfo()
     })
   },
   methods: {
@@ -325,14 +336,21 @@ export default {
       })
     },
     getSpeciesInfo() {
-      getSpecies({
-        task_id: ''
-      }).then((response) => {
+      this.specLoading = true
+      getSpecies().then((response) => {
+        this.specLoading = false
         this.speciesItems = response.data
-      }).catch((err) => { console.log(err) })
+      }).catch((err) => {
+        this.specLoading = false
+        console.log(err)
+      })
     },
     getBoxInfo(data) {
-      getLatestBoxes(data).then((response) => {
+      this.boxLoading = true
+      getLatestBoxes({
+        task_id: this.$store.getters.taskId
+      }).then((response) => {
+        this.boxLoading = false
         const recordList = response.data
         for (const record of recordList) {
           for (const local of this.boxItems) {
@@ -343,6 +361,7 @@ export default {
           }
         }
       }).catch((err) => {
+        this.boxLoading = false
         console.log(err)
       })
     },
@@ -429,5 +448,16 @@ export default {
   position: absolute;
   top: 0;
   width: 100%;
+}
+.title-font {
+  font-size: 20px;
+  margin-left: 12px;
+  color: rgba(16, 16, 16, 1);
+}
+.subtitle-font {
+  height: 11px;
+  color: rgba(255, 42, 42, 1);
+  font-size: 8px;
+  margin-left: 12px;
 }
 </style>

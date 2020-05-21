@@ -123,8 +123,11 @@ export default {
     }
   },
   mounted() {
-    this.$on('taskReady', (data) => {
-      this.getWeightRecord(data)
+    this.$on('taskReady', () => {
+      this.getWeightRecord()
+    })
+    this.$on('refreshData', () => {
+      this.getWeightRecord()
     })
   },
   methods: {
@@ -157,9 +160,11 @@ export default {
         console.log(error)
       })
     },
-    getWeightRecord(param) {
+    getWeightRecord() {
       this.loading = true
-      FetchWeightRecord(param).then((response) => {
+      FetchWeightRecord({
+        task_id: this.$store.getters.taskId
+      }).then((response) => {
         this.loading = false
         this.tableData = response.data
         if (this.tableData[0]) {
