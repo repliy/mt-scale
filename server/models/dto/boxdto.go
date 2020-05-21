@@ -22,3 +22,8 @@ type AddBoxDto struct {
 type AddBoxListDto struct {
 	BoxList []AddBoxDto `validate:"required" json:"box_list"`
 }
+
+// QueryTallyBoxDto Query boxes
+type QueryTallyBoxDto struct {
+	TaskID string `form:"task_id" validate:"required" json:"task_id"`
+}

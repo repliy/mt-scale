@@ -71,3 +71,14 @@ func GetLatestBoxes(ctx *gin.Context) interface{} {
 	utils.ValidateStructParams(param)
 	return models.FetchLatestBoxes(param)
 }
+
+// GetVesselPlantTallyInfo path: box/tally
+func GetVesselPlantTallyInfo(ctx *gin.Context) interface{} {
+	var param dto.QueryTallyBoxDto
+	if err := ctx.ShouldBindQuery(&param); err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.JSONFormatErrorCode)
+	}
+	utils.ValidateStructParams(param)
+	return models.GetTallyInfo(param)
+}

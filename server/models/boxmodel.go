@@ -277,3 +277,47 @@ func StatBoxWeight(taskID primitive.ObjectID) []vo.StatBoxWeightVo {
 	}
 	return result
 }
+
+// GetTallyInfo Get vessel plant tally info
+func GetTallyInfo(dto dto.QueryTallyBoxDto) []vo.BoxTallyVo {
+	col, ctx := Collection("box")
+	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
+	filter := []bson.M{
+		{
+			"$match": bson.M{
+				"status":  "enable",
+				"task_id": taskBsonID,
+			},
+		},
+		{
+			"$lookup": bson.M{
+				"from":         "weightrecord",
+				"localField":   "_id",
+				"foreignField": "box_id",
+				"as":           "weights",
+			},
+		},
+	}
+	cur, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		syslog.Error(err)
+		exception.ThrowBusinessError(common.DatabaseErrorCode)
+	}
+	var result []vo.BoxTallyVo
+	for cur.Next(ctx) {
+		var row vo.BoxTallyVo
+		if err := cur.Decode(&row); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		result = append(result, row)
+	}
+	for i, box := range result {
+		var tmpWeight float32
+		for _, weight := range box.Weights {
+			tmpWeight += weight.Weight
+		}
+		result[i].TotalWeight = tmpWeight
+	}
+	return result
+}
