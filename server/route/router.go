@@ -104,5 +104,9 @@ func SetupRouter() *gin.Engine {
 	taskRouter.GET("/latest", wrapper(ctrls.GetCurrentTask))
 	taskRouter.POST("/status/upd", wrapper(ctrls.UpdTaskStatus))
 
+	// test
+	testRouter := Router.Group("/test")
+	testRouter.GET("/excel", wrapper(ctrls.WriteExcelFile))
+
 	return Router
 }

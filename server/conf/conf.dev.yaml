@@ -29,6 +29,7 @@ service:
     - /tag/crt
     - /task/latest
     - /task/status/upd
+    - /test/excel
     - /favicon.ico
 
 router:

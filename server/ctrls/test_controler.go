@@ -2,11 +2,18 @@ package ctrls
 
 import (
 	"mt-scale/common"
+	"mt-scale/utils"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 )
+
+// WriteExcelFile Test path: test/excel
+func WriteExcelFile(ctx *gin.Context) interface{} {
+	utils.WriteToExcelFile()
+	return "success"
+}
 
 //Redis测试
 func RedisSetAction(ctx *gin.Context) {
