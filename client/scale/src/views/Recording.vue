@@ -1,78 +1,82 @@
 <template>
-  <v-row
-    no-gutters
-    class="pg-height"
-  >
-    <v-col cols="8">
-      <div class="top-height pa-3">
-        <RecordStatistics
-          ref="stat"
-          class="layout-border"
-        ></RecordStatistics>
-      </div>
-      <div class="bottom-height">
-        <v-row
-          align="stretch"
-          justify="space-between"
-          style="height: 100%;"
-          no-gutters
-        >
-          <v-col cols="5">
-            <RecordTab
-              ref="recordTab"
-              class="layout-border ml-3 mr-3"
-              v-on:recordTabChange="recordTabChange"
-              v-on:editRecordTabItem="editRecordTabItem"
-            ></RecordTab>
-          </v-col>
-          <v-col cols="7">
-            <Weight
-              ref="weight"
-              class="layout-border mr-3"
-              v-on:realWeight="realWeight"
-            ></Weight>
-          </v-col>
-        </v-row>
-      </div>
-    </v-col>
-    <v-col cols="4">
-      <div class="right-height">
-        <Option
-          ref="option"
-          class="layout-border mt-3"
-          v-on:addRecord="addRecord"
-          v-on:updateRecord="updateRecord"
-        ></Option>
-      </div>
-    </v-col>
-    <!--loading-->
-    <v-overlay
-      light
-      :value="loading"
-      opacity="0.23"
+  <div>
+    <AppBar rightBtnTitle="complete" v-on:clickRightBtn="recordComplete"></AppBar>
+    <v-row
+      no-gutters
+      class="pg-height"
     >
-      <v-progress-circular
-        indeterminate
-        size="48"
-      ></v-progress-circular>
-    </v-overlay>
-    <!--error message-->
-    <v-alert
-      type="error"
-      class="pg-alert"
-      transition="slide-y-transition"
-      :value="showError"
-    >
-      {{errorMessage}}
-    </v-alert>
-  </v-row>
+      <v-col cols="8">
+        <div class="top-height pa-3">
+          <RecordStatistics
+            ref="stat"
+            class="layout-border"
+          ></RecordStatistics>
+        </div>
+        <div class="bottom-height">
+          <v-row
+            align="stretch"
+            justify="space-between"
+            style="height: 100%;"
+            no-gutters
+          >
+            <v-col cols="5">
+              <RecordTab
+                ref="recordTab"
+                class="layout-border ml-3 mr-3"
+                v-on:recordTabChange="recordTabChange"
+                v-on:editRecordTabItem="editRecordTabItem"
+              ></RecordTab>
+            </v-col>
+            <v-col cols="7">
+              <Weight
+                ref="weight"
+                class="layout-border mr-3"
+                v-on:realWeight="realWeight"
+              ></Weight>
+            </v-col>
+          </v-row>
+        </div>
+      </v-col>
+      <v-col cols="4">
+        <div class="right-height">
+          <Option
+            ref="option"
+            class="layout-border mt-3"
+            v-on:addRecord="addRecord"
+            v-on:updateRecord="updateRecord"
+          ></Option>
+        </div>
+      </v-col>
+      <!--loading-->
+      <v-overlay
+        light
+        :value="loading"
+        opacity="0.23"
+      >
+        <v-progress-circular
+          indeterminate
+          size="48"
+        ></v-progress-circular>
+      </v-overlay>
+      <!--error message-->
+      <v-alert
+        type="error"
+        class="pg-alert"
+        transition="slide-y-transition"
+        :value="showError"
+      >
+        {{errorMessage}}
+      </v-alert>
+    </v-row>
+  </div>
 </template>
 <script>
 import RecordStatistics from '@/components/recording/RecordStatistics.vue'
 import RecordTab from '@/components/recording/RecordTab.vue'
 import Weight from '@/components/recording/Weight.vue'
 import Option from '@/components/recording/Option.vue'
-import { getLatestTask } from '@/core/api/task.js'
+import AppBar from '@/components/AppBar.vue'
+import { getLatestTask, updateTaskStatus } from '@/core/api/task.js'
 import { AddWeightRecord, UpdWeightRecord } from '@/core/api/record.js'
 
 export default {
@@ -88,7 +92,8 @@ export default {
     RecordStatistics,
     RecordTab,
     Weight,
-    Option
+    Option,
+    AppBar
   },
   mounted() {
     this.getTask()
@@ -143,6 +148,18 @@ export default {
         this.switchEditMode()
       })
     },
+    recordComplete() {
+      this.loading = true
+      updateTaskStatus({
+        id: this.$store.getters.taskId,
+        status: 'complete'
+      }).then((response) => {
+        this.loading = false
+      }).catch((error) => {
+        this.loading = false
+        console.log(error)
+      })
+    },
     // realtime weight output
     realWeight(val) {
       this.weightNum = val
@@ -186,7 +203,7 @@ export default {
       const _this = this
       this.errorMessage = msg
       this.showError = true
-      setTimeout(function() {
+      setTimeout(() => {
         _this.showError = false
       }, 3000)
     }

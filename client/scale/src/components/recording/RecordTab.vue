@@ -135,7 +135,6 @@ export default {
     tabItemClick(item, value) {
       value.expand(!value.isExpanded)
       this.clickItem = value
-      console.log('this.clickItem', this.clickItem)
     },
     getColor(name) {
       return 'red'
@@ -172,7 +171,12 @@ export default {
         task_id: this.$store.getters.taskId
       }).then((response) => {
         this.loading = false
-        this.tableData = response.data
+        const retData = response.data
+        if (!retData) {
+          this.tableData = []
+        } else {
+          this.tableData = retData
+        }
         if (this.tableData[0]) {
           this.$store.commit('SET_RECORD_INDEX', this.tableData[0].index)
           this.$emit('recordTabChange', {})

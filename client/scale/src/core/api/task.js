@@ -10,3 +10,14 @@ export function getLatestTask() {
     params: {}
   })
 }
+
+/**
+ * update task status
+ */
+export function updateTaskStatus(params) {
+  return request({
+    url: '/api/task/status/upd',
+    method: 'post',
+    data: params
+  })
+}
