@@ -2,6 +2,8 @@ package ctrls
 
 import (
 	"mt-scale/common"
+	"mt-scale/models"
+	"mt-scale/models/dto"
 	"mt-scale/utils"
 
 	"github.com/gin-contrib/sessions"
@@ -11,7 +13,11 @@ import (
 
 // WriteExcelFile Test path: test/excel
 func WriteExcelFile(ctx *gin.Context) interface{} {
-	utils.WriteToExcelFile()
+	var dto dto.QueryTallyBoxDto = dto.QueryTallyBoxDto{
+		TaskID: "5ec117aefa8ed46e85f52223",
+	}
+	tallyData := models.GetTallyInfo(dto)
+	utils.WriteToExcelFile(tallyData)
 	return "success"
 }
 
