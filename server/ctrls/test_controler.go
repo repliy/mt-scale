@@ -2,9 +2,9 @@ package ctrls
 
 import (
 	"mt-scale/common"
-	"mt-scale/models"
-	"mt-scale/models/dto"
+	"mt-scale/syslog"
 	"mt-scale/utils"
+	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -13,11 +13,19 @@ import (
 
 // WriteExcelFile Test path: test/excel
 func WriteExcelFile(ctx *gin.Context) interface{} {
-	var dto dto.QueryTallyBoxDto = dto.QueryTallyBoxDto{
-		TaskID: "5ec117aefa8ed46e85f52223",
-	}
-	tallyData := models.GetTallyInfo(dto)
-	utils.WriteToExcelFile(tallyData)
+	// var dto dto.QueryTallyBoxDto = dto.QueryTallyBoxDto{
+	// 	TaskID: "5ec117aefa8ed46e85f52223",
+	// }
+	// tallyData := models.GetTallyInfo(dto)
+	// utils.WriteToExcelFile(tallyData)
+	const filePath string = "test.xlsx"
+	ctx.Header("Content-Type", "application/octet-stream")
+	ctx.Header("Content-Disposition", "attachment; filename="+filePath)
+	ctx.Header("Content-Transfer-Encoding", "binary")
+	fileSize := strconv.FormatInt(utils.GetFileSize(filePath), 10)
+	syslog.Info(fileSize)
+	ctx.Header("Content-Length", "100000000000")
+	ctx.File("test.xlsx")
 	return "success"
 }
 

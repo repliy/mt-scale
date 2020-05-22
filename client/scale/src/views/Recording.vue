@@ -149,16 +149,24 @@ export default {
       })
     },
     recordComplete() {
-      this.loading = true
-      updateTaskStatus({
-        id: this.$store.getters.taskId,
-        status: 'complete'
-      }).then((response) => {
-        this.loading = false
-      }).catch((error) => {
-        this.loading = false
-        console.log(error)
-      })
+      const elemIF = document.createElement('iframe')
+      const timestamp = (new Date()).valueOf()
+      
+      elemIF.src = '/api/test/excel?snapshotTime=' + timestamp
+
+      console.log(elemIF.src)
+      elemIF.style.display = 'none'
+      document.body.appendChild(elemIF)
+      // this.loading = true
+      // updateTaskStatus({
+      //   id: this.$store.getters.taskId,
+      //   status: 'complete'
+      // }).then((response) => {
+      //   this.loading = false
+      // }).catch((error) => {
+      //   this.loading = false
+      //   console.log(error)
+      // })
     },
     // realtime weight output
     realWeight(val) {

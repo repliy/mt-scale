@@ -6,6 +6,7 @@ import (
 	"log"
 	"mt-scale/exception"
 	"mt-scale/syslog"
+	"os"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -54,4 +55,22 @@ func ByteEncoder(s interface{}) []byte {
 	}
 
 	return encResult.Bytes()
+}
+
+//GetFileSize get file size by path(B)
+func GetFileSize(path string) int64 {
+	if !exists(path) {
+		return 0
+	}
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return 0
+	}
+	return fileInfo.Size()
+}
+
+//exists Whether the path exists
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || os.IsExist(err)
 }
