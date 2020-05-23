@@ -32,6 +32,7 @@ func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 		syslog.Debug("request start:", time.Now())
 		result := handler(c)
 		if result == "file" {
+			syslog.Info("request file download")
 			return
 		}
 		retData := &ResultData{

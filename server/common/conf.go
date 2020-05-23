@@ -23,7 +23,7 @@ func init() {
 	viper.SetConfigType("yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		syslog.Error("viper read config error", err)
+		syslog.Error(err, "viper read config error")
 	}
 }
 

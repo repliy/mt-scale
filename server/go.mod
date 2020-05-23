@@ -25,4 +25,6 @@ require (
 	github.com/thedevsaddam/govalidator v1.9.10
 	github.com/unidoc/unioffice v1.3.1
 	go.mongodb.org/mongo-driver v1.3.2
+	go.uber.org/zap v1.10.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

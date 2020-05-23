@@ -44,6 +44,7 @@ func MiddleWare() gin.HandlerFunc {
 					mtException = serverError()
 				}
 				syslog.Debug("bad request end:", time.Now())
+				syslog.Error(mtException, mtException.HTTPCode)
 				c.JSON(mtException.HTTPCode, mtException)
 				c.Abort()
 			}

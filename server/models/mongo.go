@@ -44,10 +44,8 @@ func init() {
 func MongoDbCheck() {
 	if client != nil {
 		if err := client.Ping(context.TODO(), nil); err != nil {
-			syslog.Error("Database error.", err)
+			syslog.Error(err, "MongoDbCheck")
 		}
-	} else {
-		syslog.Error("Mongo database client is nil .")
 	}
 }
 
