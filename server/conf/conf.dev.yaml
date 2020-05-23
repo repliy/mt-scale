@@ -31,6 +31,7 @@ service:
     - /task/latest
     - /task/status/upd
     - /test/excel
+    - /test/local/file
     - /favicon.ico
 
 router:

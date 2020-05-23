@@ -10,7 +10,7 @@ import (
 )
 
 // WriteToExcelFile Generate excel file
-func WriteToExcelFile(datas []vo.BoxTallyVo) {
+func WriteToExcelFile(datas []vo.BoxTallyVo) string {
 	f := excelize.NewFile()
 	// Create a new sheet.
 	const sheet string = "Sheet1"
@@ -141,9 +141,11 @@ func WriteToExcelFile(datas []vo.BoxTallyVo) {
 	// Set active sheet of the workbook.
 	f.SetActiveSheet(index)
 	// Save xlsx file by the given path.
-	if err := f.SaveAs("test.xlsx"); err != nil {
+	var file string = "test.xlsx"
+	if err := f.SaveAs(file); err != nil {
 		fmt.Println(err)
 	}
+	return file
 }
 
 func numToCol(Num int) string {

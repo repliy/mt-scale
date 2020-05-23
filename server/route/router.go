@@ -31,6 +31,9 @@ func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		syslog.Debug("request start:", time.Now())
 		result := handler(c)
+		if result == "file" {
+			return
+		}
 		retData := &ResultData{
 			HTTPCode: http.StatusOK,
 			Data:     result,
@@ -108,6 +111,10 @@ func SetupRouter() *gin.Engine {
 	// test
 	testRouter := Router.Group("/test")
 	testRouter.GET("/excel", wrapper(ctrls.WriteExcelFile))
+
+	testRouter.GET("/local/file", func(c *gin.Context) {
+		c.File("test.xlsx")
+	})
 
 	return Router
 }
