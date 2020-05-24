@@ -122,12 +122,36 @@ export default {
       speciesShow: true,
       weight: 0,
       speciesData: [],
-      boxData: []
+      boxData: [
+        {
+          type: "s",
+          weight: 0
+        },
+        {
+          type: "m",
+          weight: 0
+        },
+        {
+          type: "l",
+          weight: 0
+        },
+        {
+          type: "xl",
+          weight: 0
+        },
+        {
+          type: "special",
+          weight: 0
+        }
+      ]
     }
   },
   components: {},
   mounted() {
     this.$on('taskReady', () => {
+      this.getStatInfo()
+    })
+    this.$on('refreshData', () => {
       this.getStatInfo()
     })
   },
@@ -146,7 +170,9 @@ export default {
         this.loading = false
         const retData = response.data
         this.speciesData = retData.species
-        this.boxData = retData.box
+        if (retData.box) {
+          this.boxData = retData.box
+        }
         this.weight = retData.total.weight
       }).catch((error) => {
         this.loading = false

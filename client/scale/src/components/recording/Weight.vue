@@ -39,9 +39,21 @@ import Keyboard from '@/components/recording/Keyboard.vue'
 export default {
   name: 'Weight',
   data: () => ({
-    index: 0,
-    weight: '0'
   }),
+  props: {
+    index: {
+      type: Number,
+      default: 1
+    },
+    weight: {
+      type: String,
+      default: ''
+    }
+  },
+  model: {
+    prop: 'weight',
+    event: 'change'
+  },
   components: {
     Keyboard
   },
@@ -64,8 +76,7 @@ export default {
       if (tmpNum.length === 0) {
         tmpNum = '0'
       }
-      this.weight = tmpNum
-      this.$emit('realWeight', this.weight)
+      this.$emit('change', tmpNum)
     }
   }
 }

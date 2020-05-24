@@ -57,7 +57,7 @@
             <v-col>
               <div style="height: 37px;">
                 <p class="ma-0 species-color-tag">{{item.species}}</p>
-                <p class="ma-0 species-color-tag">{{item.tags}}</p>
+                <p class="ma-0 species-color-tag">{{item.tag}}</p>
               </div>
             </v-col>
           </v-row>
@@ -155,8 +155,7 @@ export default {
         id: this.delRecord.id
       }).then((response) => {
         this.dialog = false
-        const taskId = this.$store.getters.taskId
-        this.getWeightRecord({ task_id: taskId })
+        this.$emit('recordTabChange')
       }).catch((error) => {
         this.dialog = false
         console.log(error)
@@ -179,7 +178,7 @@ export default {
         }
         if (this.tableData[0]) {
           this.$store.commit('SET_RECORD_INDEX', this.tableData[0].index)
-          this.$emit('recordTabChange', {})
+          this.$emit('recordIndexChange')
         }
       }).catch((err) => {
         this.loading = false

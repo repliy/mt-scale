@@ -6,10 +6,10 @@
           <v-btn
             class="pa-2"
             height="70"
-            outlined
             x-large
             block
             tile
+            color="grey lighten-2"
             @click="numberClick(n)"
           >
             {{n}}
@@ -27,10 +27,10 @@
         <v-btn
           class="pa-2"
           height="70"
-          outlined
           x-large
           block
           tile
+          color="grey lighten-2"
           @click="zeroClick()"
         >
           0
@@ -40,10 +40,10 @@
         <v-btn
           class="pa-2"
           height="70"
-          outlined
           x-large
           block
           tile
+          color="grey lighten-2"
           @click="deleteClick()"
         >
           Del
@@ -57,8 +57,6 @@
 export default {
   name: 'Keyboard',
   data: () => ({
-    index: 69,
-    weight: 352
   }),
   components: {
   },

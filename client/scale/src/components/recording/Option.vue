@@ -178,18 +178,32 @@
       <v-col align="center">
         <v-btn
           height="40"
+          width="100"
           color="primary"
           text-color="white"
           @click="record"
           v-if="!editMode"
         >记录</v-btn>
-        <v-btn
-          height="40"
-          color="primary"
-          text-color="white"
-          @click="update"
-          v-else
-        >更新</v-btn>
+        <v-row v-else>
+          <v-col>
+            <v-btn
+              height="40"
+              width="100"
+              color="primary"
+              text-color="white"
+              @click="update"
+            >更新</v-btn>
+          </v-col>
+          <v-col>
+            <v-btn
+              height="40"
+              width="100"
+              color="primary"
+              text-color="white"
+              @click="cancelUpdate"
+            >取消</v-btn>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <!--add box tag dialog-->
@@ -261,8 +275,13 @@ import { getSpecies } from '@/core/api/species.js'
 import { createBoxList, getLatestBoxes } from '@/core/api/box.js'
 
 export default {
+  props: {
+    editMode: {
+      type: Boolean,
+      default: false
+    }
+  },
   data: () => ({
-    editMode: false,
     specLoading: false,
     boxLoading: false,
     // species
@@ -318,22 +337,21 @@ export default {
   },
   methods: {
     record() {
-      const speciesId = this.speciesItems[this.specSeleIndex].id
-      const boxId = this.boxItems[this.boxSeleIndex].id
       this.$emit('addRecord', {
-        species_id: speciesId,
-        box_id: boxId,
+        species_id: this.speciesItems[this.specSeleIndex].id,
+        box_id: this.boxItems[this.boxSeleIndex].id,
         tag_name: this.specTag
       })
     },
     update() {
-      const speciesId = this.speciesItems[this.specSeleIndex].id
-      const boxId = this.boxItems[this.boxSeleIndex].id
       this.$emit('updateRecord', {
-        species_id: speciesId,
-        box_id: boxId,
+        species_id: this.speciesItems[this.specSeleIndex].id,
+        box_id: this.boxItems[this.boxSeleIndex].id,
         tag_name: this.specTag
       })
+    },
+    cancelUpdate() {
+      this.$emit('cancelUpdate')
     },
     getSpeciesInfo() {
       this.specLoading = true
@@ -366,7 +384,6 @@ export default {
       })
     },
     editSpeciesTag(index) {
-      console.log(index)
       this.dialog = true
     },
     okTagDialog() {

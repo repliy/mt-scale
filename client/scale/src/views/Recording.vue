@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppBar rightBtnTitle="complete" v-on:clickRightBtn="recordComplete"></AppBar>
+    <AppBar rightBtnTitle="complete" v-on:clickRightBtn="recordCompleteAction"></AppBar>
     <v-row
       no-gutters
       class="pg-height"
@@ -25,13 +25,15 @@
                 class="layout-border ml-3 mr-3"
                 v-on:recordTabChange="recordTabChange"
                 v-on:editRecordTabItem="editRecordTabItem"
+                v-on:recordIndexChange="getCurrentIndex"
               ></RecordTab>
             </v-col>
             <v-col cols="7">
               <Weight
                 ref="weight"
+                v-model="weightNum"
+                :index="weightIndex"
                 class="layout-border mr-3"
-                v-on:realWeight="realWeight"
               ></Weight>
             </v-col>
           </v-row>
@@ -42,8 +44,10 @@
           <Option
             ref="option"
             class="layout-border mt-3"
+            :editMode="optionEditMode"
             v-on:addRecord="addRecord"
             v-on:updateRecord="updateRecord"
+            v-on:cancelUpdate="cancelUpdate"
           ></Option>
         </div>
       </v-col>
@@ -67,6 +71,34 @@
       >
         {{errorMessage}}
       </v-alert>
+      <v-dialog
+      v-model="completeDialog"
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">Notice</v-card-title>
+        <v-card-text>
+          完成称重记录，导出Excel表格?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="completeDialog = false"
+          >
+            Disagree
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="complete"
+          >
+            Agree
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     </v-row>
   </div>
 </template>
@@ -82,9 +114,12 @@ import { AddWeightRecord, UpdWeightRecord } from '@/core/api/record.js'
 export default {
   name: 'Recording',
   data: () => ({
+    optionEditMode: false,
+    completeDialog: false,
     showError: false,
     errorMessage: '',
     loading: false,
+    weightIndex: 0,
     weightNum: '',
     editItem: null
   }),
@@ -120,11 +155,11 @@ export default {
       this.loading = true
       const params = Object.assign(data)
       params.task_id = this.$store.getters.taskId
-      params.index = this.$refs.weight.index
+      params.index = this.weightIndex
       params.weight = Number(this.weightNum)
       AddWeightRecord(params).then((response) => {
-        this.$refs.recordTab.$emit('refreshData')
         this.loading = false
+        this.refreshData()
       }).catch((error) => {
         console.log(error)
         this.loading = false
@@ -134,54 +169,61 @@ export default {
     updateRecord(data) {
       this.loading = true
       const params = Object.assign(data)
-      params.index = this.$refs.weight.index
+      params.index = this.weightIndex
       params.weight = Number(this.weightNum)
       params.id = this.editItem.id
       console.log(params)
       UpdWeightRecord(params).then((response) => {
         this.loading = false
-        this.switchEditMode()
-        this.$refs.recordTab.$emit('refreshData')
+        this.optionEditMode = false
+        this.refreshData()
       }).catch((error) => {
         console.log(error)
         this.loading = false
-        this.switchEditMode()
       })
     },
-    recordComplete() {
-      const elemIF = document.createElement('iframe')
-      const timestamp = (new Date()).valueOf()
-      
-      elemIF.src = '/api/test/excel?snapshotTime=' + timestamp
-
-      console.log(elemIF.src)
-      elemIF.style.display = 'none'
-      document.body.appendChild(elemIF)
-      // this.loading = true
-      // updateTaskStatus({
-      //   id: this.$store.getters.taskId,
-      //   status: 'complete'
-      // }).then((response) => {
-      //   this.loading = false
-      // }).catch((error) => {
-      //   this.loading = false
-      //   console.log(error)
-      // })
+    cancelUpdate() {
+      this.optionEditMode = false
+      this.weightNum = '0'
+      this.getCurrentIndex()
     },
-    // realtime weight output
-    realWeight(val) {
-      this.weightNum = val
+    refreshData() {
+      this.$refs.recordTab.$emit('refreshData')
+      this.$refs.stat.$emit('refreshData')
+    },
+    recordCompleteAction() {
+      this.completeDialog = true
+    },
+    complete() {
+      this.loading = true
+      updateTaskStatus({
+        id: this.$store.getters.taskId,
+        status: 'complete'
+      }).then((response) => {
+        this.loading = false
+        const elemIF = document.createElement('iframe')
+        const timestamp = (new Date()).valueOf()
+        elemIF.src = '/api/test/excel?snapshotTime=' + timestamp
+        elemIF.style.display = 'none'
+        document.body.appendChild(elemIF)
+      }).catch((error) => {
+        this.loading = false
+        console.log(error)
+      })
     },
     // record table data change
     recordTabChange() {
+      this.refreshData()
+    },
+    getCurrentIndex() {
       const curIndex = this.$store.getters.recordIndex
-      this.$refs.weight.index = curIndex + 1
+      this.weightIndex = curIndex + 1
     },
     // click record table item
     editRecordTabItem(item) {
       this.editItem = item
-      this.$refs.weight.index = item.index
-      this.$refs.weight.weight = item.weight.toString()
+      this.weightIndex = item.index
+      this.weightNum = item.weight.toString()
       this.$refs.option.specTag = item.tag
       // species
       const specItems = this.$refs.option.speciesItems
@@ -201,11 +243,7 @@ export default {
           break
         }
       }
-      this.switchEditMode()
-    },
-    // option edit mode
-    switchEditMode() {
-      this.$refs.option.editMode = !this.$refs.option.editMode
+      this.optionEditMode = true
     },
     tipErrorMessage(msg) {
       const _this = this
