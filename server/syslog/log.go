@@ -1,6 +1,9 @@
 package syslog
 
 import (
+	"fmt"
+	"mt-scale/common"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
@@ -9,7 +12,7 @@ import (
 func initLogger(logpath string, loglevel string) *zap.Logger {
 	hook := lumberjack.Logger{
 		Filename:   logpath, // ⽇志⽂件路径
-		MaxSize:    1,       // megabytes
+		MaxSize:    10,      // megabytes
 		MaxBackups: 3,       // 最多保留3个备份
 		MaxAge:     7,       // days
 		Compress:   true,    // 是否压缩 disabled by default
@@ -39,20 +42,21 @@ func initLogger(logpath string, loglevel string) *zap.Logger {
 }
 
 var (
-	debugLogger *zap.Logger
 	infoLogger  *zap.Logger
 	errorLogger *zap.Logger
 )
 
 func init() {
-	debugLogger = initLogger("/log/debug.log", "debug")
-	infoLogger = initLogger("/log/info.log", "info")
-	errorLogger = initLogger("/log/error.log", "error")
+	infoPath := common.GetConfStr("log.infofile")
+	errorPath := common.GetConfStr("log.errorfile")
+
+	infoLogger = initLogger(infoPath, "info")
+	errorLogger = initLogger(errorPath, "error")
 }
 
 // Debug args ...interface{}
 func Debug(info string, arg ...interface{}) {
-	debugLogger.Debug(info, zap.Any("key", arg))
+	fmt.Println(info, arg)
 }
 
 // Info args ...interface{}

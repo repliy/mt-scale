@@ -7,6 +7,7 @@ import (
 	"mt-scale/exception"
 	"mt-scale/syslog"
 	"os"
+	"path/filepath"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -44,6 +45,16 @@ func Find(slice []string, val string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// MatchPath match url
+func MatchPath(paths []string, url string) int {
+	for i, path := range paths {
+		if flag, _ := filepath.Match(path, url); flag {
+			return i
+		}
+	}
+	return -1
 }
 
 // ByteEncoder Encode to byte

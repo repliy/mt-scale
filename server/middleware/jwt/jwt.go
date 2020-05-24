@@ -58,7 +58,7 @@ func Middleware(options Options) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
-		if _, f := utils.Find(ignoreURL, path); f {
+		if index := utils.MatchPath(ignoreURL, path); index != -1 {
 			return
 		}
 		claim := getClaim(c)

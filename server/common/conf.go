@@ -1,14 +1,13 @@
 package common
 
 import (
-	"mt-scale/syslog"
+	"fmt"
 	"os"
 
 	"github.com/spf13/viper"
 )
 
 func init() {
-	syslog.Debug("init config files")
 	env := os.Getenv("APP_ENV")
 
 	confName := "conf.dev"
@@ -23,7 +22,7 @@ func init() {
 	viper.SetConfigType("yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		syslog.Error(err, "viper read config error")
+		fmt.Println(err, "viper read config error")
 	}
 }
 

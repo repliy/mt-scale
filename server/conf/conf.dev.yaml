@@ -14,24 +14,15 @@ redis:
 service:
   port: :8083
   ignoreurl:
-    - /order/list
-    - /box/crt
-    - /box/crtboxes
-    - /box/fetchbytype
-    - /box/latestbox
-    - /box/tally
-    - /species/crt
-    - /species/fetchall
-    - /record/crt
-    - /record/fetch
-    - /record/upd
-    - /record/del
-    - /stat/weight
-    - /tag/crt
-    - /task/latest
-    - /task/status/upd
-    - /test/excel
-    - /test/local/file
+    - /order/*
+    - /box/*
+    - /species/*
+    - /record/*
+    - /stat/*
+    - /tag/*
+    - /task/*
+    - /task/*/*
+    - /test/*
     - /favicon.ico
 
 router:
@@ -39,8 +30,8 @@ router:
   view: views/*
   
 log:
-  logfile: /tmp/lobster.log
-  errorfile: /tmp/lobster.err
+  infofile: /tmp/info.log
+  errorfile: /tmp/error.err
 
 jwt:
   token:
