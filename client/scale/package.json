@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "js-cookie": "2.2.0",
-    "axios": "0.18.0",
+    "axios": "0.18.1",
     "@tensorflow-models/coco-ssd": "../ssd_scale",
     "@tensorflow/tfjs": "1.2.9",
     "core-js": "^3.6.4",
