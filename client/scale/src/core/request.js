@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { requestCode } from '@/core/config.js'
 import log from '@/utils/log'
+import store from '@/store'
 
 // 超时时间
 const requestTimeout = 10000
@@ -19,6 +20,7 @@ const service = axios.create({
 // request
 service.interceptors.request.use(
   config => {
+
     return config
   },
   error => {

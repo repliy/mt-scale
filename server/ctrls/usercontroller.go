@@ -31,7 +31,5 @@ func Login(ctx *gin.Context) interface{} {
 		exception.ThrowBusinessError(common.JSONFormatErrorCode)
 	}
 	utils.ValidateStructParams(dto)
-	user, tokenStr := models.Login(dto)
-	ctx.Header("jwt", tokenStr)
-	return user
+	return models.Login(dto)
 }

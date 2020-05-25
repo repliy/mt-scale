@@ -57,7 +57,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary">Login</v-btn>
+                <v-btn color="primary" @click="userLogin">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -68,9 +68,28 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      source: String,
-    },
+import { login } from '@/core/api/user.js'
+export default {
+  name: 'login',
+  data: () => ({
+      loading: false,
+      username: 'admin',
+      password: 'admin'
+  }),
+  props: {
+    source: String,
+  },
+  mounted() {},
+  methods: {
+    userLogin() {
+      this.loading = true
+      login({
+         username: this.username,
+         password: this.password
+      }).then((response) => {
+         this.$store.commit('updateAuthToken', response.data.access_token)
+      }).catch((err) => {})
+    }
   }
+}
 </script>

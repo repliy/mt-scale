@@ -6,6 +6,7 @@ import (
 	"mt-scale/exception"
 	"mt-scale/middleware/jwt"
 	"mt-scale/models/dto"
+	"mt-scale/models/vo"
 	"mt-scale/syslog"
 	"mt-scale/utils"
 
@@ -40,7 +41,7 @@ func AddUser(user entitys.User) primitive.ObjectID {
 }
 
 // Login User login
-func Login(dto dto.LoginDto) (entitys.User, string) {
+func Login(dto dto.LoginDto) vo.LoginVo {
 	col, ctx := Collection("user")
 	filter := bson.D{
 		primitive.E{
@@ -53,6 +54,7 @@ func Login(dto dto.LoginDto) (entitys.User, string) {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
+	var vo *vo.LoginVo = new(vo.LoginVo)
 	var user entitys.User
 	if cur.Next(ctx) {
 		if err := cur.Decode(&user); err != nil {
@@ -62,8 +64,11 @@ func Login(dto dto.LoginDto) (entitys.User, string) {
 		if utils.Md5(dto.Password) != user.Password {
 			exception.ThrowBusinessErrorMsg("用户名密码不相符")
 		}
-		return user, jwt.GetTokenString(user)
+		vo.ID = user.ID
+		vo.Username = user.Username
+		vo.AccessToken = jwt.GetTokenString(user)
+		return *vo
 	}
 	exception.ThrowBusinessErrorMsg("用户名密码不相符")
-	return user, ""
+	return *vo
 }

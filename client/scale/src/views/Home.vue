@@ -19,7 +19,8 @@ export default {
   },
   methods: {
     goRecording() {
-      this.$router.push({ name: 'Recording' })
+      // this.$router.push({ name: 'Recording' })
+      this.$router.push({ name: 'Login' })
     }
   }
 }
