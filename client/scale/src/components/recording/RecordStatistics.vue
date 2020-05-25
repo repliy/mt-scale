@@ -174,9 +174,15 @@ export default {
           this.boxData = retData.box
         }
         this.weight = retData.total.weight
-      }).catch((error) => {
+      }).catch((err) => {
         this.loading = false
-        console.log(error)
+        this.tipErrorMessage(err.message)
+      })
+    },
+    tipErrorMessage(msg) {
+      this.$emit('alertMessage', {
+        type: 'error',
+        msg: msg
       })
     }
   }

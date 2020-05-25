@@ -1,6 +1,9 @@
 <template>
   <div>
-    <AppBar rightBtnTitle="complete" v-on:clickRightBtn="recordCompleteAction"></AppBar>
+    <AppBar
+      rightBtnTitle="complete"
+      v-on:clickRightBtn="recordCompleteAction"
+    ></AppBar>
     <v-row
       no-gutters
       class="pg-height"
@@ -10,6 +13,7 @@
           <RecordStatistics
             ref="stat"
             class="layout-border"
+            v-on:alertMessage="receiveAlertMessage"
           ></RecordStatistics>
         </div>
         <div class="bottom-height">
@@ -26,6 +30,7 @@
                 v-on:recordTabChange="recordTabChange"
                 v-on:editRecordTabItem="editRecordTabItem"
                 v-on:recordIndexChange="getCurrentIndex"
+                v-on:alertMessage="receiveAlertMessage"
               ></RecordTab>
             </v-col>
             <v-col cols="7">
@@ -48,6 +53,7 @@
             v-on:addRecord="addRecord"
             v-on:updateRecord="updateRecord"
             v-on:cancelUpdate="cancelUpdate"
+            v-on:alertMessage="receiveAlertMessage"
           ></Option>
         </div>
       </v-col>
@@ -64,41 +70,41 @@
       </v-overlay>
       <!--error message-->
       <v-alert
-        type="error"
+        :type="alertType"
         class="pg-alert"
         transition="slide-y-transition"
-        :value="showError"
+        :value="showAlert"
       >
-        {{errorMessage}}
+        {{alertMessage}}
       </v-alert>
       <v-dialog
-      v-model="completeDialog"
-      max-width="290"
-    >
-      <v-card>
-        <v-card-title class="headline">Notice</v-card-title>
-        <v-card-text>
-          完成称重记录，导出Excel表格?
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            text
-            @click="completeDialog = false"
-          >
-            Disagree
-          </v-btn>
-          <v-btn
-            color="green darken-1"
-            text
-            @click="complete"
-          >
-            Agree
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        v-model="completeDialog"
+        max-width="290"
+      >
+        <v-card>
+          <v-card-title class="headline">Notice</v-card-title>
+          <v-card-text>
+            完成称重记录，导出Excel表格?
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="completeDialog = false"
+            >
+              Disagree
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="complete"
+            >
+              Agree
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-row>
   </div>
 </template>
@@ -116,8 +122,9 @@ export default {
   data: () => ({
     optionEditMode: false,
     completeDialog: false,
-    showError: false,
-    errorMessage: '',
+    showAlert: false,
+    alertMessage: '',
+    alertType: 'error',
     loading: false,
     weightIndex: 0,
     weightNum: '',
@@ -147,22 +154,26 @@ export default {
         this.$refs.stat.$emit('taskReady')
       }).catch((err) => {
         this.loading = false
-        console.log(err)
+        this.tipAlertMessage('error', err.message)
       })
     },
     // add new record
     addRecord(data) {
-      this.loading = true
       const params = Object.assign(data)
       params.task_id = this.$store.getters.taskId
       params.index = this.weightIndex
       params.weight = Number(this.weightNum)
+      if (params.weight <= 0) {
+        this.tipAlertMessage('warning', '重量不能为0')
+        return
+      }
+      this.loading = true
       AddWeightRecord(params).then((response) => {
         this.loading = false
         this.refreshData()
-      }).catch((error) => {
-        console.log(error)
+      }).catch((err) => {
         this.loading = false
+        this.tipAlertMessage('error', err.message)
       })
     },
     // edit record
@@ -177,9 +188,9 @@ export default {
         this.loading = false
         this.optionEditMode = false
         this.refreshData()
-      }).catch((error) => {
-        console.log(error)
+      }).catch((err) => {
         this.loading = false
+        this.tipAlertMessage('error', err.message)
       })
     },
     cancelUpdate() {
@@ -207,9 +218,9 @@ export default {
         elemIF.src = '/api/test/excel?snapshotTime=' + timestamp
         elemIF.style.display = 'none'
         document.body.appendChild(elemIF)
-      }).catch((error) => {
+      }).catch((err) => {
         this.loading = false
-        console.log(error)
+        this.tipAlertMessage('error', err.message)
       })
     },
     // record table data change
@@ -220,7 +231,7 @@ export default {
       const curIndex = this.$store.getters.recordIndex
       this.weightIndex = curIndex + 1
     },
-    // click record table item
+    // click record table item edit button
     editRecordTabItem(item) {
       this.editItem = item
       this.weightIndex = item.index
@@ -246,12 +257,16 @@ export default {
       }
       this.optionEditMode = true
     },
-    tipErrorMessage(msg) {
+    receiveAlertMessage(data) {
+      this.tipAlertMessage(data.type, data.msg)
+    },
+    tipAlertMessage(type, msg) {
       const _this = this
-      this.errorMessage = msg
-      this.showError = true
+      this.alertMessage = msg
+      this.alertType = type
+      this.showAlert = true
       setTimeout(() => {
-        _this.showError = false
+        _this.showAlert = false
       }, 3000)
     }
   }

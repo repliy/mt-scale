@@ -364,7 +364,7 @@ export default {
         this.speciesItems = response.data
       }).catch((err) => {
         this.specLoading = false
-        console.log(err)
+        this.tipErrorMessage(err.message)
       })
     },
     getBoxInfo(data) {
@@ -384,7 +384,7 @@ export default {
         }
       }).catch((err) => {
         this.boxLoading = false
-        console.log(err)
+        this.tipErrorMessage(err.message)
       })
     },
     editSpeciesTag(index) {
@@ -465,7 +465,12 @@ export default {
     },
     changeBox(val) {
       this.boxSeleIndex = val
-      console.log(val)
+    },
+    tipErrorMessage(msg) {
+      this.$emit('alertMessage', {
+        type: 'error',
+        msg: msg
+      })
     }
   }
 }

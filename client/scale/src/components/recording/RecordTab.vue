@@ -88,6 +88,7 @@
           <v-btn
             color="green darken-1"
             text
+            :loading="delBtnLoading"
             @click="deleteRecord"
           >
             Agree
@@ -105,6 +106,7 @@ export default {
     return {
       dialog: false,
       loading: false,
+      delBtnLoading: false,
       loadingText: 'Loading...Please wait...',
       delRecord: null,
       editRecord: null,
@@ -151,14 +153,17 @@ export default {
       if (this.delRecord == null) {
         return
       }
+      this.delBtnLoading = true
       DeleteWeightRecord({
         id: this.delRecord.id
       }).then((response) => {
+        this.delBtnLoading = false
         this.dialog = false
         this.$emit('recordTabChange')
-      }).catch((error) => {
+      }).catch((err) => {
+        this.delBtnLoading = false
         this.dialog = false
-        console.log(error)
+        this.tipErrorMessage(err.message)
       })
     },
     closeExpandItem() {
@@ -185,7 +190,13 @@ export default {
         }
       }).catch((err) => {
         this.loading = false
-        console.log(err)
+        this.tipErrorMessage(err.message)
+      })
+    },
+    tipErrorMessage(msg) {
+      this.$emit('alertMessage', {
+        type: 'error',
+        msg: msg
       })
     }
   }
