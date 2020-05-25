@@ -267,7 +267,7 @@ export default {
       this.showAlert = true
       setTimeout(() => {
         _this.showAlert = false
-      }, 3000)
+      }, 2000)
     }
   }
 }

@@ -1,100 +1,120 @@
 <template>
-  <v-app id="inspire">
-    <v-content>
-      <v-container
-        class="fill-height"
-        fluid
+  <div>
+    <v-container
+      class="pg-height"
+      fluid
+    >
+      <AppBar></AppBar>
+      <v-row
+        align="center"
+        justify="center"
+        style="height: 100%;"
       >
-        <v-row
-          align="center"
-          justify="center"
+        <v-col
+          cols="12"
+          md="5"
         >
-          <v-col
-            cols="12"
-            sm="8"
-            md="4"
-          >
-            <v-card class="elevation-12">
-              <v-toolbar
+          <v-card>
+            <v-toolbar
+              color="primary"
+              dark
+              flat
+            >
+              <v-toolbar-title>Login</v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+            <v-card-text>
+              <v-form>
+                <v-text-field
+                  :value="username"
+                  label="Login"
+                  name="login"
+                  type="text"
+                ></v-text-field>
+                <v-text-field
+                  :value="password"
+                  label="Password"
+                  name="password"
+                  type="password"
+                ></v-text-field>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
                 color="primary"
-                dark
-                flat
-              >
-                <v-toolbar-title>Login form</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :href="source"
-                      icon
-                      large
-                      target="_blank"
-                      v-on="on"
-                    >
-                      <v-icon>mdi-code-tags</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Source</span>
-                </v-tooltip>
-              </v-toolbar>
-              <v-card-text>
-                <v-form>
-                  <v-text-field
-                    label="Login"
-                    name="login"
-                    prepend-icon="person"
-                    type="text"
-                  ></v-text-field>
-
-                  <v-text-field
-                    id="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="lock"
-                    type="password"
-                  ></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="primary"
-                  @click="userLogin"
-                >Login</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-content>
-  </v-app>
+                :loading="btnLoading"
+                @click="userLogin"
+              >Login</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <!--error message-->
+    <v-alert
+      :type="alertType"
+      class="pg-alert"
+      transition="slide-y-transition"
+      :value="showAlert"
+    >
+      {{alertMessage}}
+    </v-alert>
+  </div>
 </template>
 <script>
+import AppBar from '@/components/AppBar.vue'
 import { login } from '@/core/api/user.js'
 export default {
   name: 'Login',
   data: () => ({
-    loading: false,
+    btnLoading: false,
+    showAlert: false,
+    alertMessage: '',
+    alertType: 'error',
     username: 'admin',
     password: 'admin'
   }),
+  components: {
+    AppBar
+  },
   props: {
     source: String
   },
   mounted() { },
   methods: {
     userLogin() {
-      this.loading = true
+      this.btnLoading = true
       login({
         username: this.username,
         password: this.password
       }).then((response) => {
+        this.btnLoading = false
         this.$store.commit('updateAuthToken', response.data.token)
         this.$router.push('/recording')
       }).catch((err) => {
-        console.log(err)
+        this.btnLoading = false
+        this.tipErrorMessage(err.message)
       })
+    },
+    tipErrorMessage(msg) {
+      const _this = this
+      this.alertMessage = msg
+      this.showAlert = true
+      setTimeout(() => {
+        _this.showAlert = false
+      }, 2000)
     }
   }
 }
 </script>
+<style scoped>
+.pg-height {
+  height: calc(100vh - 64px);
+}
+.pg-alert {
+  width: 100vw;
+  position: absolute;
+  top: 0;
+}
+</style>
