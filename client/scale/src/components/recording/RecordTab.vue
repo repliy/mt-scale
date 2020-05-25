@@ -161,11 +161,14 @@ export default {
         console.log(error)
       })
     },
-    getWeightRecord() {
-      this.loading = true
+    closeExpandItem() {
       if (this.clickItem) {
         this.clickItem.expand(false)
       }
+    },
+    getWeightRecord() {
+      this.loading = true
+      this.closeExpandItem()
       FetchWeightRecord({
         task_id: this.$store.getters.taskId
       }).then((response) => {

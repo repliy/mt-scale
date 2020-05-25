@@ -124,23 +124,23 @@ export default {
       speciesData: [],
       boxData: [
         {
-          type: "s",
+          type: 's',
           weight: 0
         },
         {
-          type: "m",
+          type: 'm',
           weight: 0
         },
         {
-          type: "l",
+          type: 'l',
           weight: 0
         },
         {
-          type: "xl",
+          type: 'xl',
           weight: 0
         },
         {
-          type: "special",
+          type: 'special',
           weight: 0
         }
       ]

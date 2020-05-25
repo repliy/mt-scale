@@ -212,8 +212,9 @@
         v-model="boxDialog"
         persistent
         max-width="350"
+        class="d-flex"
       >
-        <v-card>
+        <v-card :loading="'primary' && boxTagLoading">
           <v-alert
             class="bindBoxAlert"
             :value="bindAlert"
@@ -261,6 +262,7 @@
             <v-btn
               color="blue darken-1"
               text
+              :loading="boxTagSaveLoading"
               @click="bindBoxNum"
             >Save</v-btn>
           </v-card-actions>
@@ -284,6 +286,8 @@ export default {
   data: () => ({
     specLoading: false,
     boxLoading: false,
+    boxTagLoading: false,
+    boxTagSaveLoading: false,
     // species
     tagDialog: false,
     speciesItems: [],
@@ -419,8 +423,12 @@ export default {
       this.bindBoxTagError = msg
       this.bindAlert = true
     },
+    showBindBoxNumLoading(show) {
+      this.boxTagLoading = show
+      this.boxTagSaveLoading = show
+    },
     bindBoxNum() {
-      this.loading = true
+      this.showBindBoxNumLoading(true)
       const params = []
       const boxNums = []
       for (const item of this.boxItems) {
@@ -428,6 +436,7 @@ export default {
           if (boxNums.indexOf(item.num) !== -1) {
             // find same box num
             this.showBindBoxAlert(item.type + ' type box num ' + item.num + 'duplication')
+            this.showBindBoxNumLoading(false)
             return
           }
           boxNums.push(item.num)
@@ -438,7 +447,7 @@ export default {
       createBoxList({
         box_list: params
       }).then((response) => {
-        this.loading = false
+        this.showBindBoxNumLoading(false)
         this.boxDialog = false
         const binds = response.data
         for (const bind of binds) {
@@ -450,6 +459,7 @@ export default {
           }
         }
       }).catch((error) => {
+        this.showBindBoxNumLoading(false)
         this.showBindBoxAlert(error.msg)
       })
     },

@@ -185,6 +185,7 @@ export default {
     cancelUpdate() {
       this.optionEditMode = false
       this.weightNum = '0'
+      this.$refs.recordTab.closeExpandItem()
       this.getCurrentIndex()
     },
     refreshData() {
