@@ -2,6 +2,7 @@ import axios from 'axios'
 import { requestCode } from '@/core/config.js'
 import log from '@/utils/log'
 import store from '@/store'
+// import router from '@/router'
 
 // 超时时间
 const requestTimeout = 10000
@@ -9,6 +10,14 @@ const requestTimeout = 10000
 // 错误码处理器
 const errorCoderHandler = (response, config) => {
   log.d('response:', response)
+  const code = response.code
+  switch (code) {
+    case requestCode.TOKEN_AUTH_FAILED:
+      store.dispatch('FedLogOut').then(() => {
+        // router.push('/login')
+        location.href = '/login'
+      })
+  }
 }
 
 // 创建axios实例
@@ -20,7 +29,9 @@ const service = axios.create({
 // request
 service.interceptors.request.use(
   config => {
-
+    if (store.getters.getAccessToken) {
+      config.headers.Authorization = `Bearer ${store.getters.getAccessToken}`
+    }
     return config
   },
   error => {

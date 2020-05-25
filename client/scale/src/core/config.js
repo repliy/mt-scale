@@ -12,14 +12,14 @@ const requestCode = {
   SUCCESS: 200000,
   // 未知异常
   UNKNOW: -1,
-  // 10010004:Token 过期了;
-  TOKEN_EXPIRE: 10010004,
+  // 200401:Token 验证失败;
+  TOKEN_AUTH_FAILED: 200401,
   // 10010007:Token 已签退
   TOKEN_SIGN_BACK: 10010007
 }
 
 const config = {
-  key_prefix: 'Ingot-Cloud-',
+  key_prefix: 'MT-SSR-',
   domain: process.env.VUE_APP_COOKIE_DOMAIN
 }
 

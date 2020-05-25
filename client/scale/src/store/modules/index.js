@@ -1,7 +1,9 @@
 import record from './record'
+import user from './user'
 
 const modules = {
-  record
+  record,
+  user
 }
 
 export default modules

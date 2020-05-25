@@ -14,15 +14,7 @@ redis:
 service:
   port: :8083
   ignoreurl:
-    - /order/*
-    - /box/*
-    - /species/*
-    - /record/*
-    - /stat/*
-    - /tag/*
-    - /task/*
-    - /task/*/*
-    - /user/*
+    - /user/login
     - /test/*
     - /favicon.ico
 

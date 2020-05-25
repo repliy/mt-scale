@@ -57,7 +57,10 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="userLogin">Login</v-btn>
+                <v-btn
+                  color="primary"
+                  @click="userLogin"
+                >Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -66,29 +69,31 @@
     </v-content>
   </v-app>
 </template>
-
 <script>
 import { login } from '@/core/api/user.js'
 export default {
-  name: 'login',
+  name: 'Login',
   data: () => ({
-      loading: false,
-      username: 'admin',
-      password: 'admin'
+    loading: false,
+    username: 'admin',
+    password: 'admin'
   }),
   props: {
-    source: String,
+    source: String
   },
-  mounted() {},
+  mounted() { },
   methods: {
     userLogin() {
       this.loading = true
       login({
-         username: this.username,
-         password: this.password
+        username: this.username,
+        password: this.password
       }).then((response) => {
-         this.$store.commit('updateAuthToken', response.data.access_token)
-      }).catch((err) => {})
+        this.$store.commit('updateAuthToken', response.data.token)
+        this.$router.push('/recording')
+      }).catch((err) => {
+        console.log(err)
+      })
     }
   }
 }

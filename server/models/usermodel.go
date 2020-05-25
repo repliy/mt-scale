@@ -54,7 +54,7 @@ func Login(dto dto.LoginDto) vo.LoginVo {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	var vo *vo.LoginVo = new(vo.LoginVo)
+	var result *vo.LoginVo = new(vo.LoginVo)
 	var user entitys.User
 	if cur.Next(ctx) {
 		if err := cur.Decode(&user); err != nil {
@@ -64,11 +64,13 @@ func Login(dto dto.LoginDto) vo.LoginVo {
 		if utils.Md5(dto.Password) != user.Password {
 			exception.ThrowBusinessErrorMsg("用户名密码不相符")
 		}
-		vo.ID = user.ID
-		vo.Username = user.Username
-		vo.AccessToken = jwt.GetTokenString(user)
-		return *vo
+		result.ID = user.ID
+		result.Username = user.Username
+		var token *vo.AuthTokenVo = new(vo.AuthTokenVo)
+		token.AccessToken = jwt.GetTokenString(user)
+		result.Token = *token
+		return *result
 	}
 	exception.ThrowBusinessErrorMsg("用户名密码不相符")
-	return *vo
+	return *result
 }
