@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"mt-scale/common"
+	"mt-scale/entitys"
 	"mt-scale/exception"
 	"mt-scale/syslog"
 	"mt-scale/utils"
@@ -23,20 +24,6 @@ var (
 const (
 	SecretKey = "my secret key"
 )
-
-// User User entity
-type User struct {
-	Email      string
-	Password   string
-	Firstname  string
-	Middlename string
-	Lastname   string
-	Role       string
-	Address    string
-	Group      string
-	User       string
-	Time       time.Time
-}
 
 // Options stores configurations for a JWT middleware.
 type Options struct {
@@ -61,56 +48,33 @@ func Middleware(options Options) gin.HandlerFunc {
 		if index := utils.MatchPath(ignoreURL, path); index != -1 {
 			return
 		}
-		claim := getClaim(c)
-		if claim == nil {
+		claims := getClaim(c)
+		if claims == nil {
 			defaultErrorFunc(common.JWTAuthFailedCode)
 		}
-		exp := claim["exp"]
+		exp := claims["exp"]
 		if exp == nil || exp.(float64) < float64(time.Now().Unix()) {
 			defaultErrorFunc(common.TokenExpiredCode)
 		}
 
-		email := ""
-		if val, ok := claim["email"]; ok {
-			email = val.(string)
-		}
-		role := ""
-		if val, ok := claim["role"]; ok {
-			role = val.(string)
-		}
-		group := ""
-		if val, ok := claim["group"]; ok {
-			group = val.(string)
-		}
-		firstname := ""
-		if val, ok := claim["firstname"]; ok {
-			firstname = val.(string)
-		}
-		lastname := ""
-		if val, ok := claim["lastname"]; ok {
-			lastname = val.(string)
+		username := ""
+		if val, ok := claims["username"]; ok {
+			username = val.(string)
 		}
 
-		user := User{
-			Email:     email,
-			Role:      role,
-			Group:     group,
-			Firstname: firstname,
-			Lastname:  lastname,
+		user := entitys.User{
+			Username: username,
 		}
 
 		c.Set("loginuser", user)
 
-		// log.Debug(user)
-
-		tokenString := getTokenString(user)
-
-		// log.Debug("New TOKEN:   ", tokenString)
+		tokenString := GetTokenString(user)
 		c.Header("jwt", tokenString)
 	}
 }
 
-func getTokenString(user User) string {
+// GetTokenString Get token string
+func GetTokenString(user entitys.User) string {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
 	if exp := common.GetConfInt("jwt.token.exp"); exp > 0 {
@@ -118,11 +82,7 @@ func getTokenString(user User) string {
 	}
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenExp)).Unix()
 	claims["iat"] = time.Now().Unix()
-	claims["email"] = user.Email
-	claims["role"] = user.Role
-	claims["group"] = user.Group
-	claims["firstname"] = user.Firstname
-	claims["lastname"] = user.Lastname
+	claims["username"] = user.Username
 
 	token.Claims = claims
 
@@ -135,8 +95,6 @@ func getTokenString(user User) string {
 
 func getClaim(c *gin.Context) jwt.MapClaims {
 	tokenString := c.GetHeader("Authorization")
-
-	// log.Debug(tokenString)
 
 	if len(tokenString) < 15 {
 		return nil

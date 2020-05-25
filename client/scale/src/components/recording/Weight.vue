@@ -47,7 +47,7 @@ export default {
     },
     weight: {
       type: String,
-      default: ''
+      default: '0'
     }
   },
   model: {

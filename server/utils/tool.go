@@ -2,12 +2,15 @@ package utils
 
 import (
 	"bytes"
+	"crypto/md5"
 	"encoding/gob"
+	"encoding/hex"
 	"log"
 	"mt-scale/exception"
 	"mt-scale/syslog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -84,4 +87,12 @@ func GetFileSize(path string) int64 {
 func exists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil || os.IsExist(err)
+}
+
+// Md5 md5 encrypt
+func Md5(inputStr string) string {
+	h := md5.New()
+	h.Write([]byte(inputStr))
+	str := strings.ToUpper(hex.EncodeToString(h.Sum(nil)))
+	return str
 }

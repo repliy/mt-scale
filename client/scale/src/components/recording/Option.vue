@@ -460,7 +460,7 @@ export default {
         }
       }).catch((error) => {
         this.showBindBoxNumLoading(false)
-        this.showBindBoxAlert(error.msg)
+        this.showBindBoxAlert(error.message)
       })
     },
     changeBox(val) {

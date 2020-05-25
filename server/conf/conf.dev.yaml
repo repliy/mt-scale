@@ -22,6 +22,7 @@ service:
     - /tag/*
     - /task/*
     - /task/*/*
+    - /user/*
     - /test/*
     - /favicon.ico
 
