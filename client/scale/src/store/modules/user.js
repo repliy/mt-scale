@@ -42,6 +42,9 @@ const user = {
         })
       }
     },
+    SET_USERNAME(state, name) {
+      state.username = name
+    },
     logout(state) {
       state.username = ''
       state.authToken = {}
@@ -54,6 +57,7 @@ const user = {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('logout')
+        location.href = '/login'
         resolve()
       })
     }

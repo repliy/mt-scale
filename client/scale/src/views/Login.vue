@@ -91,6 +91,7 @@ export default {
       }).then((response) => {
         this.btnLoading = false
         this.$store.commit('updateAuthToken', response.data.token)
+        this.$store.commit('SET_USERNAME', response.data.username)
         this.$router.push('/recording')
       }).catch((err) => {
         this.btnLoading = false

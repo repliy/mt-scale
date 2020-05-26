@@ -14,7 +14,6 @@ const errorCoderHandler = (response, config) => {
   switch (code) {
     case requestCode.TOKEN_AUTH_FAILED:
       store.dispatch('FedLogOut').then(() => {
-        // router.push('/login')
         location.href = '/login'
       })
   }

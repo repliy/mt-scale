@@ -2,6 +2,8 @@
   <div>
     <AppBar
       rightBtnTitle="complete"
+      leftBtnTitle="logout"
+      v-on:clickLeftBtn="logoutAction"
       v-on:clickRightBtn="recordCompleteAction"
     ></AppBar>
     <v-row
@@ -78,27 +80,27 @@
         {{alertMessage}}
       </v-alert>
       <v-dialog
-        v-model="completeDialog"
+        v-model="dialog"
         max-width="290"
       >
         <v-card>
           <v-card-title class="headline">Notice</v-card-title>
           <v-card-text>
-            完成称重记录，导出Excel表格?
+            {{dialogText}}
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               color="green darken-1"
               text
-              @click="completeDialog = false"
+              @click="dialog = false"
             >
               Disagree
             </v-btn>
             <v-btn
               color="green darken-1"
               text
-              @click="complete"
+              @click="dialogAgree"
             >
               Agree
             </v-btn>
@@ -117,11 +119,20 @@ import AppBar from '@/components/AppBar.vue'
 import { getLatestTask, updateTaskStatus } from '@/core/api/task.js'
 import { AddWeightRecord, UpdWeightRecord } from '@/core/api/record.js'
 
+const DIALOG = {
+  TYPE: {
+    COMPLETE: 'Record-Complete',
+    LOGOUT: 'Logout'
+  }
+}
+
 export default {
   name: 'Recording',
   data: () => ({
     optionEditMode: false,
-    completeDialog: false,
+    dialog: false,
+    dialogText: '',
+    dialogType: DIALOG.TYPE.COMPLETE,
     showAlert: false,
     alertMessage: '',
     alertType: 'error',
@@ -204,24 +215,39 @@ export default {
       this.$refs.stat.$emit('refreshData')
     },
     recordCompleteAction() {
-      this.completeDialog = true
+      this.dialogText = '完成记录，导出Excel ?'
+      this.dialogType = DIALOG.TYPE.COMPLETE
+      this.dialog = true
     },
-    complete() {
-      this.loading = true
-      updateTaskStatus({
-        id: this.$store.getters.taskId,
-        status: 'complete'
-      }).then((response) => {
-        this.loading = false
-        const elemIF = document.createElement('iframe')
-        const timestamp = (new Date()).valueOf()
-        elemIF.src = '/api/test/excel?snapshotTime=' + timestamp
-        elemIF.style.display = 'none'
-        document.body.appendChild(elemIF)
-      }).catch((err) => {
-        this.loading = false
-        this.tipAlertMessage('error', err.message)
-      })
+    logoutAction() {
+      this.dialogText = 'logout ?'
+      this.dialogType = DIALOG.TYPE.LOGOUT
+      this.dialog = true
+    },
+    dialogAgree() {
+      switch (this.dialogType) {
+        case DIALOG.TYPE.COMPLETE:
+          this.loading = true
+          updateTaskStatus({
+            id: this.$store.getters.taskId,
+            status: 'complete'
+          }).then((response) => {
+            this.loading = false
+            const elemIF = document.createElement('iframe')
+            const timestamp = (new Date()).valueOf()
+            elemIF.src = '/api/test/excel?snapshotTime=' + timestamp
+            elemIF.style.display = 'none'
+            document.body.appendChild(elemIF)
+          }).catch((err) => {
+            this.loading = false
+            this.tipAlertMessage('error', err.message)
+          })
+          break
+        case DIALOG.TYPE.LOGOUT:
+          this.$store.dispatch('FedLogOut')
+          break
+        default :
+      }
     },
     // record table data change
     recordTabChange() {
