@@ -24,7 +24,34 @@ func AddSpecies(spec entitys.Species) primitive.ObjectID {
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
 	if cur.Next(ctx) {
-		exception.ThrowBusinessErrorMsg("该物种信息已存在，请更改...")
+		// exist, update
+		var record entitys.Species
+		if err := cur.Decode(&record); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		queryFilter := bson.D{
+			primitive.E{
+				Key:   "_id",
+				Value: record.ID,
+			},
+		}
+		update := bson.D{
+			primitive.E{
+				Key: "$set",
+				Value: bson.M{
+					"color":       spec.Color,
+					"name":        spec.Name,
+					"has_tag":     spec.HasTag,
+					"update_time": time.Now(),
+				},
+			},
+		}
+		if _, err := col.UpdateOne(ctx, queryFilter, update); err != nil {
+			syslog.Error(err)
+			exception.ThrowBusinessError(common.DatabaseErrorCode)
+		}
+		return record.ID
 	}
 	timeNow := time.Now()
 	spec.CreateTime = timeNow
@@ -127,6 +154,9 @@ func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 		{
 			"$group": bson.M{
 				"_id": "$name",
+				"color": bson.M{
+					"$first": "$color",
+				},
 				"weight": bson.M{
 					"$sum": "$weights.weight",
 				},
@@ -135,6 +165,7 @@ func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
 		{
 			"$project": bson.M{
 				"name":   "$_id",
+				"color":  1,
 				"weight": 1,
 			},
 		},

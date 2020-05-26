@@ -15,6 +15,7 @@ service:
   port: :8083
   ignoreurl:
     - /user/login
+    - /species/crt
     - /test/*
     - /favicon.ico
 

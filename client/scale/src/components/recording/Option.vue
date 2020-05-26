@@ -39,7 +39,7 @@
                     <v-col cols="3">
                       <v-icon
                         class="d-inline"
-                        color="red"
+                        :color="item.color"
                       >mdi-label</v-icon>
                     </v-col>
                     <v-col>

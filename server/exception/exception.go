@@ -13,12 +13,12 @@ import (
 type MtException struct {
 	HTTPCode  int    `json:"-"`
 	ErrorCode int    `json:"code"`
-	Msg       string `json:"msg"`
+	Message   string `json:"message"`
 }
 
 // Error Implement error interface
 func (e *MtException) Error() string {
-	return e.Msg
+	return e.Message
 }
 
 // New New Create
@@ -26,7 +26,7 @@ func New(code int, msg string) *MtException {
 	return &MtException{
 		HTTPCode:  http.StatusOK,
 		ErrorCode: code,
-		Msg:       msg,
+		Message:   msg,
 	}
 }
 
@@ -59,7 +59,7 @@ func ThrowBusinessError(code int) {
 	err := &MtException{
 		HTTPCode:  http.StatusOK,
 		ErrorCode: code,
-		Msg:       msg,
+		Message:   msg,
 	}
 	panic(err)
 }
@@ -69,7 +69,7 @@ func ThrowBusinessErrorMsg(messgae string) {
 	err := &MtException{
 		HTTPCode:  http.StatusOK,
 		ErrorCode: common.BusinessErrorCode,
-		Msg:       messgae,
+		Message:   messgae,
 	}
 	panic(err)
 }
@@ -78,7 +78,7 @@ func unknownError(message string) *MtException {
 	return &MtException{
 		HTTPCode:  http.StatusForbidden,
 		ErrorCode: common.UnknownErrorCode,
-		Msg:       message,
+		Message:   message,
 	}
 }
 
@@ -86,6 +86,6 @@ func serverError() *MtException {
 	return &MtException{
 		HTTPCode:  http.StatusInternalServerError,
 		ErrorCode: common.ServerErrorCode,
-		Msg:       http.StatusText(http.StatusInternalServerError),
+		Message:   http.StatusText(http.StatusInternalServerError),
 	}
 }

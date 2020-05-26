@@ -3,6 +3,7 @@
     <AppBar
       rightBtnTitle="complete"
       leftBtnTitle="logout"
+      :leftTitle="username"
       v-on:clickLeftBtn="logoutAction"
       v-on:clickRightBtn="recordCompleteAction"
     ></AppBar>
@@ -133,6 +134,7 @@ export default {
     dialog: false,
     dialogText: '',
     dialogType: DIALOG.TYPE.COMPLETE,
+    username: '',
     showAlert: false,
     alertMessage: '',
     alertType: 'error',
@@ -150,6 +152,8 @@ export default {
   },
   mounted() {
     this.getTask()
+    this.username = this.$store.getters.getUsername
+    console.log('111', this.username)
   },
   methods: {
     getTask() {

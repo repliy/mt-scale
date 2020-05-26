@@ -18,6 +18,9 @@ const user = {
       return state.authToken.access_token
     },
     getUsername: state => {
+      if (!state.username || state.username.length === 0) {
+        state.username = IngotCookie.get(enums.USER.LOGIN_NAME)
+      }
       return state.username
     }
   },
@@ -44,6 +47,10 @@ const user = {
     },
     SET_USERNAME(state, name) {
       state.username = name
+      IngotCookie.set({
+        key: enums.USER.LOGIN_NAME,
+        value: name
+      })
     },
     logout(state) {
       state.username = ''

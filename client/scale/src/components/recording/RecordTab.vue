@@ -51,7 +51,7 @@
             <v-col cols="3">
               <v-icon
                 class="d-inline"
-                :color="getColor(item.species)"
+                :color="item.species_color"
               >mdi-label</v-icon>
             </v-col>
             <v-col>
@@ -137,9 +137,6 @@ export default {
     tabItemClick(item, value) {
       value.expand(!value.isExpanded)
       this.clickItem = value
-    },
-    getColor(name) {
-      return 'red'
     },
     itemEdit(item) {
       this.editRecord = item

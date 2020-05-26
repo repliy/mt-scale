@@ -21,7 +21,7 @@ type ResultData struct {
 	HTTPCode int         `json:"-"`
 	Data     interface{} `json:"data"`
 	Code     int         `json:"code"`
-	Msg      string      `json:"msg"`
+	Message  string      `json:"message"`
 }
 
 // ResultHandlerFunc Controller return result data handler
@@ -39,7 +39,7 @@ func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 			HTTPCode: http.StatusOK,
 			Data:     result,
 			Code:     common.BusinessSuccessCode,
-			Msg:      common.StatusText(common.BusinessSuccessCode),
+			Message:  common.StatusText(common.BusinessSuccessCode),
 		}
 		syslog.Debug("request end:", time.Now())
 		c.JSON(retData.HTTPCode, retData)

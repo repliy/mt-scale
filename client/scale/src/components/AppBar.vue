@@ -11,7 +11,7 @@
       />
     </div>
     <div class="d-flex align-center">
-      <p v-if="username != ''" class="ma-0">{{ username }}</p>
+      <p v-if="leftTitle != ''" class="ma-0">{{ leftTitle }}</p>
       <v-divider class="mx-4" vertical></v-divider>
       <v-btn v-if="leftBtnTitle != ''" class="pa-0" text @click="clickLeftBtn">{{ leftBtnTitle }}</v-btn>
     </div>
@@ -26,7 +26,6 @@
 export default {
   name: 'AppBar',
   data: () => ({
-    username: ''
   }),
   props: {
     rightBtnTitle: {
@@ -36,11 +35,13 @@ export default {
     leftBtnTitle: {
       type: String,
       default: ''
+    },
+    leftTitle: {
+      type: String,
+      default: ''
     }
   },
-  mounted() {
-    this.username = this.$store.getters.getUsername
-  },
+  mounted() {},
   methods: {
     clickRightBtn() {
       this.$emit('clickRightBtn')

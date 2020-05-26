@@ -26,16 +26,18 @@
             <v-card-text>
               <v-form>
                 <v-text-field
-                  :value="username"
-                  label="Login"
-                  name="login"
+                  v-model="username"
+                  label="Name"
+                  name="name"
                   type="text"
+                  clearable
                 ></v-text-field>
                 <v-text-field
-                  :value="password"
+                  v-model="password"
                   label="Password"
                   name="password"
                   type="password"
+                  clearable
                 ></v-text-field>
               </v-form>
             </v-card-text>
@@ -72,8 +74,8 @@ export default {
     showAlert: false,
     alertMessage: '',
     alertType: 'error',
-    username: 'admin',
-    password: 'admin'
+    username: '',
+    password: ''
   }),
   components: {
     AppBar

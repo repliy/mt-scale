@@ -52,7 +52,7 @@
                   <v-col cols="3">
                     <v-icon
                       class="d-inline"
-                      :color="getSpeciesTagColor()"
+                      :color="item.color"
                     >mdi-label</v-icon>
                   </v-col>
                   <v-col>
@@ -158,9 +158,6 @@ export default {
   methods: {
     switchCard() {
       this.speciesShow = !this.speciesShow
-    },
-    getSpeciesTagColor() {
-      return 'green'
     },
     getStatInfo() {
       this.loading = true

@@ -10,6 +10,7 @@ type StatBoxWeightVo struct {
 type StatSpecWeightVo struct {
 	Name   string  `json:"name"`
 	Weight float32 `json:"weight"`
+	Color  string  `json:"color"`
 }
 
 // StatTotalWeightVo Statis total weight
