@@ -58,7 +58,7 @@
                   <v-col>
                     <div style="height: 37px;">
                       <p class="ma-0 species-color-tag">{{item.name}}</p>
-                      <p class="ma-0 species-color-tag">{{item.weight}} bl</p>
+                      <p class="ma-0 species-color-tag">{{item.weight}} lb</p>
                     </div>
                   </v-col>
                 </v-row>

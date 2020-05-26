@@ -64,7 +64,7 @@
         </div>
       </template>
       <template v-slot:item.weight="{ item }">
-        <div class="species-color-tag">{{item.weight}}bl</div>
+        <div class="species-color-tag">{{item.weight}} lb</div>
       </template>
     </v-data-table>
     <v-dialog
