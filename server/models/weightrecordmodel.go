@@ -96,22 +96,31 @@ func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 			Value: dto.ID,
 		},
 	}
+	// tmp tag
+	var tag entitys.FishTag
+
+	// query weight record
 	var record entitys.WeightRecord
 	if err := col.FindOne(ctx, filter).Decode(&record); err != nil {
 		syslog.Error(err)
 		exception.ThrowBusinessError(common.DatabaseErrorCode)
 	}
-	var tag entitys.FishTag
-	if dto.TagName != "" {
-		tag = SelectTagByName(dto.TagName)
-		if tag == (entitys.FishTag{}) {
-			tag.ID = AddTag(entitys.FishTag{
-				SpeciesID: dto.SpeciesID,
-				Name:      dto.TagName,
-			})
-		}
-		if tag.Used {
-			exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
+	// query species info
+	speciesInfo := SelectSpeciesByID(dto.SpeciesID)
+	if speciesInfo.HasTag {
+		// query tag info
+		if dto.TagName != "" {
+			tag = SelectTagByName(dto.TagName)
+			if tag == (entitys.FishTag{}) {
+				tag.ID = AddTag(entitys.FishTag{
+					SpeciesID: dto.SpeciesID,
+					Name:      dto.TagName,
+				})
+			}
+			// species tag is used, but it's not input tag
+			if tag.Used && record.TagID != tag.ID {
+				exception.ThrowBusinessErrorMsg("绑定的Tag已经占用")
+			}
 		}
 	}
 	update := bson.D{
@@ -136,7 +145,9 @@ func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
 		// restore origin tag
 		UpdateFishTagStatus(record.TagID, false)
 		// flag new tag is used
-		UpdateFishTagStatus(tag.ID, true)
+		if tag.ID != primitive.NilObjectID {
+			UpdateFishTagStatus(tag.ID, true)
+		}
 	}
 	return record.ID
 }

@@ -140,7 +140,7 @@ export default {
     alertType: 'error',
     loading: false,
     weightIndex: 0,
-    weightNum: '',
+    weightNum: '0',
     editItem: null
   }),
   components: {
