@@ -18,8 +18,10 @@ const user = {
       return state.authToken.access_token
     },
     getUsername: state => {
+      console.log('user1: ', state.username)
       if (!state.username || state.username.length === 0) {
         state.username = IngotCookie.get(enums.USER.LOGIN_NAME)
+        console.log('user2: ', state.username)
       }
       return state.username
     }
@@ -57,6 +59,9 @@ const user = {
       state.authToken = {}
       IngotCookie.remove({
         key: enums.USER.AUTH_TOKEN
+      })
+      IngotCookie.remove({
+        key: enums.USER.LOGIN_NAME
       })
     }
   },

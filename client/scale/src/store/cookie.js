@@ -9,11 +9,9 @@ class IngotCookie {
   }
 
   set(cookie) {
-    console.log('2')
     const { key, value, expires, path, success } = cookie
     IngotCookie.checkKey(key)
     const finalKey = this.keyPrefix + key
-    console.log('222')
     Cookies.set(finalKey, value, {
       expires: expires || this.expireTime,
       path: path || '/',

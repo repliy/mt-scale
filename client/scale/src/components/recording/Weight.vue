@@ -13,9 +13,10 @@
       </v-col>
       <v-col>
         <input
+          ref="weightInput"
           readonly
           class="weight_input"
-          :value="weight"
+          :value="displayWeight(weight)"
         />
         <v-divider darkr></v-divider>
       </v-col>
@@ -35,6 +36,7 @@
 </template>
 <script>
 import Keyboard from '@/components/recording/Keyboard.vue'
+import { toThousands } from '@/utils/func.js'
 
 export default {
   name: 'Weight',
@@ -58,25 +60,44 @@ export default {
     Keyboard
   },
   methods: {
+    displayWeight(weight) {
+      return toThousands(weight)
+    },
     kbClick(data) {
       let tmpNum
       if (data.num >= 0) {
+        // tap 0~9
         if (data.num === 0 && this.weight === '0') {
+          // tap 0 and weight is 0
           return
         }
         if (this.weight.substr(0, 1) === '0') {
+          // weight is 0
           tmpNum = this.weight.substr(1, this.weight.length - 1)
         } else {
           tmpNum = this.weight
         }
         tmpNum += data.num.toString()
       } else {
+        // tap delete
         tmpNum = this.weight.substr(0, this.weight.length - 1)
       }
       if (tmpNum.length === 0) {
         tmpNum = '0'
       }
+      this.changeDisplaySize(tmpNum)
       this.$emit('change', tmpNum)
+    },
+    changeDisplaySize(num) {
+      let fontSize = 72
+      if (num.length > 4) {
+        let tmp = fontSize - (num.length - 4) * 10
+        if (tmp <= 32) {
+          tmp = 32
+        }
+        fontSize = tmp
+      }
+      this.$refs.weightInput.style.fontSize = fontSize + 'px'
     }
   }
 }
@@ -93,8 +114,8 @@ export default {
   color: rgba(51, 48, 48, 1);
   width: 183px;
   height: 100px;
-  padding: 0px;
   text-align: right;
+  padding-top:30px;
 }
 .keyboard-layout {
   height: 39vh;

@@ -1,3 +1,7 @@
+/**
+ * convert number to 123,456
+ * @param {123456} num 
+ */
 export function toThousands(num) {
   var result = '', counter = 0;
   num = (num || 0).toString();
@@ -7,4 +11,12 @@ export function toThousands(num) {
     if (!(counter % 3) && i != 0) { result = ',' + result; }
   }
   return result;
+}
+
+/**
+ * convert string to 123456
+ * @param {123,456} str 
+ */
+export function toNumbers(str) {
+  return str.replace(/,/, "")
 }
