@@ -20,7 +20,7 @@
               dark
               flat
             >
-              <v-toolbar-title>Login</v-toolbar-title>
+              <v-toolbar-title>{{$tc('ssr.loginTitle')}}</v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
             <v-card-text>
@@ -47,7 +47,7 @@
                 color="primary"
                 :loading="btnLoading"
                 @click="userLogin"
-              >Login</v-btn>
+              >{{$tc('ssr.loginBtn')}}</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>

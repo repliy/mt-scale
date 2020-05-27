@@ -8,8 +8,8 @@
     </v-progress-linear>
     <v-row no-gutters class="mt-3">
       <v-col>
-        <div class="title-font">物种选择: {{specTag}}</div>
-        <p class="subtitle-font">请选择物种类型</p>
+        <div class="title-font">{{$tc('ssr.selectSpecies')}}: {{specTag}}</div>
+        <p class="subtitle-font">{{$tc('ssr.selectSpeciesType')}}</p>
       </v-col>
     </v-row>
     <!--species select-->
@@ -73,7 +73,7 @@
           height="2"
         >
         </v-progress-linear>
-        <div class="title-font d-inline">箱子选择:</div>
+        <div class="title-font d-inline">{{$tc('ssr.selectBox')}}:</div>
         <v-btn
           class="ml-5 d-inline"
           small
@@ -89,7 +89,7 @@
       align="end"
     >
       <v-col>
-        <p class="subtitle-font">请选择箱子类型</p>
+        <p class="subtitle-font">{{$tc('ssr.selectBoxType')}}</p>
       </v-col>
     </v-row>
     <!--box select-->
@@ -140,14 +140,14 @@
         max-width="350"
       >
         <v-card>
-          <v-card-title class="headline">Tag 信息</v-card-title>
+          <v-card-title class="headline">{{$tc('ssr.tagInfo')}}</v-card-title>
           <v-card-text>
             <v-row>
               <v-col cols="12">
                 <v-text-field
                   v-model="specTag"
                   clearable
-                  label="请输入Tag编号"
+                  :label="$tc('ssr.enterTagNo')"
                   type="text"
                 >
                 </v-text-field>
@@ -161,12 +161,12 @@
               color="green darken-1"
               text
               @click="cancelTagDialog"
-            >Disagree</v-btn>
+            >{{$tc('ssr.disagree')}}</v-btn>
             <v-btn
               color="green darken-1"
               text
               @click="okTagDialog"
-            >Agree</v-btn>
+            >{{$tc('ssr.agree')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -183,7 +183,7 @@
           text-color="white"
           @click="record"
           v-if="!editMode"
-        >记录</v-btn>
+        >{{$tc('ssr.recordBtn')}}</v-btn>
         <v-row v-else>
           <v-col>
             <v-btn
@@ -192,7 +192,7 @@
               color="primary"
               text-color="white"
               @click="update"
-            >更新</v-btn>
+            >{{$tc('ssr.updBtn')}}</v-btn>
           </v-col>
           <v-col>
             <v-btn
@@ -201,7 +201,7 @@
               color="primary"
               text-color="white"
               @click="cancelUpdate"
-            >取消</v-btn>
+            >{{$tc('ssr.cancelBtn')}}</v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -221,32 +221,32 @@
             type="error"
           >{{bindBoxTagError}}</v-alert>
           <v-card-title>
-            <span class="headline">绑定箱子号</span>
+            <span class="headline">{{$tc('ssr.bindBoxNo')}}</span>
           </v-card-title>
           <v-card-text>
             <v-container>
               <v-text-field
-                label="小号*"
+                :label="$tc('ssr.smallBox')"
                 required
                 v-model="boxItems[0].num"
               ></v-text-field>
               <v-text-field
-                label="中号*"
+                :label="$tc('ssr.middleBox')"
                 required
                 v-model="boxItems[1].num"
               ></v-text-field>
               <v-text-field
-                label="大号*"
+                :label="$tc('ssr.bigBox')"
                 v-model="boxItems[2].num"
                 required
               ></v-text-field>
               <v-text-field
-                label="特大*"
+                :label="$tc('ssr.extraLargeBox')"
                 required
                 v-model="boxItems[3].num"
               ></v-text-field>
               <v-text-field
-                label="特殊*"
+                :label="$tc('ssr.specialBox')"
                 required
                 v-model="boxItems[4].num"
               ></v-text-field>
@@ -258,13 +258,13 @@
               color="blue darken-1"
               text
               @click="boxDialog = false"
-            >Close</v-btn>
+            >{{$tc('ssr.closeBtn')}}</v-btn>
             <v-btn
               color="blue darken-1"
               text
               :loading="boxTagSaveLoading"
               @click="bindBoxNum"
-            >Save</v-btn>
+            >{{$tc('ssr.saveBtn')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -277,62 +277,64 @@ import { getSpecies } from '@/core/api/species.js'
 import { createBoxList, getLatestBoxes } from '@/core/api/box.js'
 
 export default {
+  data() {
+    return {
+      specLoading: false,
+      boxLoading: false,
+      boxTagLoading: false,
+      boxTagSaveLoading: false,
+      // species
+      tagDialog: false,
+      speciesItems: [],
+      specSeleIndex: null,
+      preSpecSele: null,
+      specTag: null,
+      // box
+      boxSeleIndex: null,
+      boxDialog: false,
+      weight: 352,
+      bindAlert: false,
+      bindBoxTagError: '',
+      boxItems: [
+        {
+          id: '',
+          type: 's',
+          num: '',
+          name: this.$t('ssr.smallBox')
+        },
+        {
+          id: '',
+          type: 'm',
+          num: '',
+          name: this.$tc('ssr.middleBox')
+        },
+        {
+          id: '',
+          type: 'l',
+          num: '',
+          name: this.$tc('ssr.bigBox')
+        },
+        {
+          id: '',
+          type: 'xl',
+          num: '',
+          name: this.$tc('ssr.extraLargeBox')
+        },
+        {
+          id: '',
+          type: 'special',
+          num: '',
+          name: this.$tc('ssr.specialBox')
+        }
+      ]
+    }
+  },
   props: {
     editMode: {
       type: Boolean,
       default: false
     }
   },
-  data: () => ({
-    specLoading: false,
-    boxLoading: false,
-    boxTagLoading: false,
-    boxTagSaveLoading: false,
-    // species
-    tagDialog: false,
-    speciesItems: [],
-    specSeleIndex: null,
-    preSpecSele: null,
-    specTag: null,
-    // box
-    boxSeleIndex: null,
-    boxDialog: false,
-    weight: 352,
-    bindAlert: false,
-    bindBoxTagError: '',
-    boxItems: [
-      {
-        id: '',
-        type: 's',
-        num: '',
-        name: '小号'
-      },
-      {
-        id: '',
-        type: 'm',
-        num: '',
-        name: '中号'
-      },
-      {
-        id: '',
-        type: 'l',
-        num: '',
-        name: '大号'
-      },
-      {
-        id: '',
-        type: 'xl',
-        num: '',
-        name: '超大号'
-      },
-      {
-        id: '',
-        type: 'special',
-        num: '',
-        name: '特殊'
-      }
-    ]
-  }),
   mounted() {
     this.getSpeciesInfo()
     this.$on('taskReady', () => {
@@ -374,11 +376,13 @@ export default {
       }).then((response) => {
         this.boxLoading = false
         const recordList = response.data
-        for (const record of recordList) {
-          for (const local of this.boxItems) {
-            if (local.type === record.box_type) {
-              local.id = record.box_id
-              local.num = record.box_num
+        if (Array.isArray(recordList)) {
+          for (const record of recordList) {
+            for (const local of this.boxItems) {
+              if (local.type === record.box_type) {
+                local.id = record.box_id
+                local.num = record.box_num
+              }
             }
           }
         }

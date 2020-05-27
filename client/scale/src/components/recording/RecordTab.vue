@@ -24,7 +24,7 @@
                 block
                 class="d-inline pa-2 deep-purple white--text"
                 @click="itemEdit(item)"
-              >编辑</v-btn>
+              >{{$tc('ssr.edit')}}</v-btn>
             </v-col>
             <v-col>
               <v-btn
@@ -32,7 +32,7 @@
                 block
                 class="d-inline pa-2 red white--text"
                 @click="itemDel(item)"
-              >删除</v-btn>
+              >{{$tc('ssr.delete')}}</v-btn>
             </v-col>
           </v-row>
         </td>
@@ -64,7 +64,7 @@
         </div>
       </template>
       <template v-slot:item.weight="{ item }">
-        <div class="species-color-tag">{{item.weight}} lb</div>
+        <div class="species-color-tag">{{displayWeight(item.weight)}} {{$tc('ssr.pound')}}</div>
       </template>
     </v-data-table>
     <v-dialog
@@ -74,7 +74,7 @@
       <v-card>
         <v-card-title class="headline">Notice</v-card-title>
         <v-card-text>
-          Delete Record?
+          {{$tc('ssr.delRecord')}}?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -83,7 +83,7 @@
             text
             @click="dialog = false"
           >
-            Disagree
+            {{$tc('ssr.disagree')}}
           </v-btn>
           <v-btn
             color="green darken-1"
@@ -91,7 +91,7 @@
             :loading="delBtnLoading"
             @click="deleteRecord"
           >
-            Agree
+            {{$tc('ssr.agree')}}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -101,6 +101,7 @@
 
 <script>
 import { FetchWeightRecord, DeleteWeightRecord } from '@/core/api/record.js'
+import { toThousands } from '@/utils/func.js'
 export default {
   data() {
     return {
@@ -134,6 +135,9 @@ export default {
     })
   },
   methods: {
+    displayWeight(weight) {
+      return toThousands(weight)
+    },
     tabItemClick(item, value) {
       value.expand(!value.isExpanded)
       this.clickItem = value

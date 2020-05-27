@@ -10,6 +10,9 @@
 export default {
   name: 'App',
   components: {},
+  created() {
+    this.$i18n.locale = 'zh-CN'
+  },
   data: () => ({
   }),
   methods: {}

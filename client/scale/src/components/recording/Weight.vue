@@ -2,14 +2,14 @@
   <div style="height: 100%;">
     <v-row no-gutters>
       <v-col class="pb-0">
-        <div class="tag_font">序号: {{index}}</div>
+        <div class="tag_font">{{$tc('ssr.index')}}: {{index}}</div>
       </v-col>
     </v-row>
     <v-row no-gutters align="end">
       <v-col
         cols="4"
       >
-        <p class="d-inline tag_font">当前重量: </p>
+        <p class="d-inline tag_font">{{$tc('ssr.curWeight')}}: </p>
       </v-col>
       <v-col>
         <input
@@ -20,7 +20,7 @@
         <v-divider darkr></v-divider>
       </v-col>
       <v-col>
-        <p class="d-inline">lb</p>
+        <p class="d-inline">{{$tc('ssr.pound')}}</p>
       </v-col>
     </v-row>
     <v-row

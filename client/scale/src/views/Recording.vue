@@ -1,8 +1,8 @@
 <template>
   <div>
     <AppBar
-      rightBtnTitle="complete"
-      leftBtnTitle="logout"
+      :rightBtnTitle="$tc('ssr.complete')"
+      :leftBtnTitle="$tc('ssr.logout')"
       :leftTitle="username"
       v-on:clickLeftBtn="logoutAction"
       v-on:clickRightBtn="recordCompleteAction"
@@ -96,14 +96,14 @@
               text
               @click="dialog = false"
             >
-              Disagree
+              {{$tc('ssr.disagree')}}
             </v-btn>
             <v-btn
               color="green darken-1"
               text
               @click="dialogAgree"
             >
-              Agree
+              {{$tc('ssr.agree')}}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -219,12 +219,12 @@ export default {
       this.$refs.stat.$emit('refreshData')
     },
     recordCompleteAction() {
-      this.dialogText = '完成记录，导出Excel ?'
+      this.dialogText = this.$tc('ssr.completeTip') + '?'
       this.dialogType = DIALOG.TYPE.COMPLETE
       this.dialog = true
     },
     logoutAction() {
-      this.dialogText = 'logout ?'
+      this.dialogText = this.$tc('ssr.logout') + '?'
       this.dialogType = DIALOG.TYPE.LOGOUT
       this.dialog = true
     },

@@ -16,9 +16,9 @@
         max-width=200
       >
         <v-card-text>
-          <div class="weight-tag-font">总重量</div>
+          <div class="weight-tag-font">{{$tc('ssr.totalWeight')}}</div>
           <p class="display-1 weight-font">
-            {{weight}} <span class="wight-unit-font">bl</span>
+            {{displayWeight(weight)}} <span class="wight-unit-font">{{$tc('ssr.pound')}}</span>
           </p>
         </v-card-text>
       </v-card>
@@ -29,7 +29,7 @@
         tile
         min-width=400
       >
-        <div class="weight-tag-font mt-3">物种</div>
+        <div class="weight-tag-font mt-3">{{$tc('ssr.species')}}</div>
         <v-row
           no-gutters
           class="mt-5"
@@ -58,7 +58,7 @@
                   <v-col>
                     <div style="height: 37px;">
                       <p class="ma-0 species-color-tag">{{item.name}}</p>
-                      <p class="ma-0 species-color-tag">{{item.weight}} lb</p>
+                      <p class="ma-0 species-color-tag">{{displayWeight(item.weight)}} {{$tc('ssr.pound')}}</p>
                     </div>
                   </v-col>
                 </v-row>
@@ -79,7 +79,7 @@
         tile
         min-width=400
       >
-        <div class="weight-tag-font mt-3">箱子</div>
+        <div class="weight-tag-font mt-3">{{$tc('ssr.box')}}</div>
         <v-row
           no-gutters
           class="mt-5"
@@ -97,7 +97,7 @@
                 <p
                   style="line-height: 37px;"
                   class="ml-2"
-                >{{item.type}}:{{item.weight}} lb</p>
+                >{{item.type}}:{{displayWeight(item.weight)}} {{$tc('ssr.pound')}}</p>
               </div>
             </v-col>
             <v-responsive
@@ -114,6 +114,7 @@
 
 <script>
 import { StatWeight } from '@/core/api/record.js'
+import { toThousands } from '@/utils/func.js'
 export default {
   name: 'RecordStatistics',
   data() {
@@ -156,6 +157,9 @@ export default {
     })
   },
   methods: {
+    displayWeight(weight) {
+      return toThousands(weight)
+    },
     switchCard() {
       this.speciesShow = !this.speciesShow
     },
@@ -202,7 +206,7 @@ export default {
   height: 20px;
 }
 .species-color-tag {
-  height: 12px;
+  height: 18px;
   font-size: 6px;
 }
 .top-height {
