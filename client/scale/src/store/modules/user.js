@@ -40,6 +40,7 @@ const user = {
           timestamp: timestamp
         }
         state.authToken = accessToken
+        console.log('accessToken', accessToken)
         IngotCookie.set({
           key: enums.USER.AUTH_TOKEN,
           value: accessToken,
@@ -48,10 +49,12 @@ const user = {
       }
     },
     SET_USERNAME(state, name) {
+      const usernameExpires = 7
       state.username = name
       IngotCookie.set({
         key: enums.USER.LOGIN_NAME,
-        value: name
+        value: name,
+        expires: usernameExpires
       })
     },
     logout(state) {

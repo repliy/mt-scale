@@ -5,7 +5,7 @@ class IngotCookie {
   constructor() {
     this.keyPrefix = config.key_prefix
     this.domain = config.domain
-    this.expireTime = 2 / 24 // 默认2小时后过期
+    this.expireTime = 7
   }
 
   set(cookie) {
