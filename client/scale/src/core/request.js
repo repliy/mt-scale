@@ -2,7 +2,6 @@ import axios from 'axios'
 import { requestCode } from '@/core/config.js'
 import log from '@/utils/log'
 import store from '@/store'
-// import router from '@/router'
 
 // 超时时间
 const requestTimeout = 10000
@@ -13,9 +12,8 @@ const errorCoderHandler = (response, config) => {
   const code = response.code
   switch (code) {
     case requestCode.TOKEN_AUTH_FAILED:
-      store.dispatch('FedLogOut').then(() => {
-        location.href = '/login'
-      })
+      store.commit('logout')
+      console.log('response error logout')
   }
 }
 

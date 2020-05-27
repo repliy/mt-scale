@@ -6,6 +6,7 @@ import (
 	"mt-scale/exception"
 	"mt-scale/syslog"
 	"mt-scale/utils"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -46,6 +47,9 @@ func Middleware(options Options) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
 		if index := utils.MatchPath(ignoreURL, path); index != -1 {
+			return
+		}
+		if !strings.HasPrefix(path, "/api/") {
 			return
 		}
 		claims := getClaim(c)

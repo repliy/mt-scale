@@ -1,5 +1,6 @@
 import { enums } from '@/core/config'
 import IngotCookie from '@/store/cookie'
+import router from '@/router'
 
 const user = {
   state: {
@@ -18,10 +19,8 @@ const user = {
       return state.authToken.access_token
     },
     getUsername: state => {
-      console.log('user1: ', state.username)
       if (!state.username || state.username.length === 0) {
         state.username = IngotCookie.get(enums.USER.LOGIN_NAME)
-        console.log('user2: ', state.username)
       }
       return state.username
     }
@@ -40,7 +39,6 @@ const user = {
           timestamp: timestamp
         }
         state.authToken = accessToken
-        console.log('accessToken', accessToken)
         IngotCookie.set({
           key: enums.USER.AUTH_TOKEN,
           value: accessToken,
@@ -66,13 +64,13 @@ const user = {
       IngotCookie.remove({
         key: enums.USER.LOGIN_NAME
       })
+      router.push('/login')
     }
   },
   actions: {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('logout')
-        location.href = '/login'
         resolve()
       })
     }

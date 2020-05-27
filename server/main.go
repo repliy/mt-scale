@@ -11,7 +11,6 @@ import (
 
 func main() {
 	syslog.Debug("Application Starting ...")
-
 	task.Start()
 
 	gin.SetMode(gin.DebugMode)

@@ -14,10 +14,9 @@ redis:
 service:
   port: :8083
   ignoreurl:
-    - /user/login
-    - /species/crt
-    - /test/*
-    - /favicon.ico
+    - /api/user/login
+    - /api/species/crt
+    - /api/test/*
 
 router:
   static: /

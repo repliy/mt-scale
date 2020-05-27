@@ -9,6 +9,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
+	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
 	github.com/gin-gonic/gin v1.6.2
 	github.com/go-ini/ini v1.55.0
 	github.com/go-playground/validator/v10 v10.2.0

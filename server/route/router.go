@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
 // Router Gin router
-var Router *gin.Engine
+// var Router *gin.Engine
 
 // ResultData Http request return data struct
 type ResultData struct {
@@ -46,38 +47,38 @@ func wrapper(handler ResultHandlerFunc) func(c *gin.Context) {
 	}
 }
 
-func init() {
-	Router = gin.Default()
+// SetupRouter Setup path
+func SetupRouter() *gin.Engine {
+	router := gin.Default()
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"*"}
 	config.AllowHeaders = []string{"*", "jwt"}
 	config.ExposeHeaders = []string{"jwt"}
 
-	Router.Use(cors.New(config))
+	router.Use(cors.New(config))
 	// exception middleware need to before others
-	Router.Use(exception.MiddleWare())
+	router.Use(exception.MiddleWare())
 
-	Router.Use(jwt.Middleware(jwt.Options{}))
-}
+	router.Use(jwt.Middleware(jwt.Options{}))
 
-// SetupRouter Setup path
-func SetupRouter() *gin.Engine {
-	// static
-	staticPath := common.GetConfStr("router.static")
-	Router.Static("/static", staticPath)
+	router.Use(static.Serve("/", static.LocalFile("./dist/", true)))
 
-	// tpl
-	viewPath := common.GetConfStr("router.view")
-	Router.LoadHTMLGlob(viewPath)
+	// // static
+	// staticPath := common.GetConfStr("router.static")
+	// router.Static("/static", staticPath)
+
+	// // tpl
+	// viewPath := common.GetConfStr("router.view")
+	// router.LoadHTMLGlob(viewPath)
 
 	// 404
-	Router.NoRoute(func(ctx *gin.Context) {
-		ctx.HTML(http.StatusNotFound, "404.html", "")
-	})
+	// router.NoRoute(func(ctx *gin.Context) {
+	// 	ctx.HTML(http.StatusNotFound, "404.html", "")
+	// })
 
 	// box
-	boxRouter := Router.Group("/box")
+	boxRouter := router.Group("/api/box")
 	boxRouter.POST("/crt", wrapper(ctrls.CreateBox))
 	boxRouter.POST("/crtboxes", wrapper(ctrls.CreateBoxList))
 	boxRouter.GET("/fetchbytype", wrapper(ctrls.GetBoxByType))
@@ -85,42 +86,42 @@ func SetupRouter() *gin.Engine {
 	boxRouter.GET("/tally", wrapper(ctrls.GetVesselPlantTallyInfo))
 
 	// species
-	speciesRouter := Router.Group("/species")
+	speciesRouter := router.Group("/api/species")
 	speciesRouter.POST("/crt", wrapper(ctrls.CreateSpecies))
 	speciesRouter.GET("/fetchall", wrapper(ctrls.GetAllSpecies))
 
 	// tag
-	tagRouter := Router.Group("/tag")
+	tagRouter := router.Group("/api/tag")
 	tagRouter.POST("/crt", wrapper(ctrls.CreateFishTag))
 
 	// record
-	recordRouter := Router.Group("/record")
+	recordRouter := router.Group("/api/record")
 	recordRouter.POST("/crt", wrapper(ctrls.AddWeightRecord))
 	recordRouter.GET("/fetch", wrapper(ctrls.GetWeightRecord))
 	recordRouter.POST("/upd", wrapper(ctrls.UpdateWeightRecord))
 	recordRouter.POST("/del", wrapper(ctrls.DelWeightRecord))
 
 	// stat
-	statRouter := Router.Group("/stat")
+	statRouter := router.Group("/api/stat")
 	statRouter.GET("/weight", wrapper(ctrls.StatWeight))
 
 	// task
-	taskRouter := Router.Group("/task")
+	taskRouter := router.Group("/api/task")
 	taskRouter.GET("/latest", wrapper(ctrls.GetCurrentTask))
 	taskRouter.POST("/status/upd", wrapper(ctrls.UpdTaskStatus))
 
 	// user
-	userRouter := Router.Group("/user")
+	userRouter := router.Group("/api/user")
 	userRouter.POST("/add", wrapper(ctrls.AddUser))
 	userRouter.POST("/login", wrapper(ctrls.Login))
 
 	// test
-	testRouter := Router.Group("/test")
+	testRouter := router.Group("/api/test")
 	testRouter.GET("/excel", wrapper(ctrls.WriteExcelFile))
 
-	testRouter.GET("/local/file", func(c *gin.Context) {
+	testRouter.GET("/api/local/file", func(c *gin.Context) {
 		c.File("test.xlsx")
 	})
 
-	return Router
+	return router
 }
