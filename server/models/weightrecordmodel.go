@@ -16,7 +16,8 @@ import (
 
 // AddWeightRecord record weight one time
 func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
-	col, ctx := Collection("weightrecord")
+	col, ctx, cancel := Collection("weightrecord")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{
 			Key:   "index",
@@ -89,7 +90,8 @@ func AddWeightRecord(param dto.AddWeightRecordDto) primitive.ObjectID {
 
 // UpdWeightRecord update weight record by index
 func UpdWeightRecord(dto dto.UpdWeightRecordDto) primitive.ObjectID {
-	col, ctx := Collection("weightrecord")
+	col, ctx, cancel := Collection("weightrecord")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{
 			Key:   "_id",
@@ -169,7 +171,8 @@ func validateBoxAndSpec(record entitys.WeightRecord) {
 
 // FetchWeightRecord fetch weight record by conditions
 func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
-	col, ctx := Collection("weightrecord")
+	col, ctx, cancel := Collection("weightrecord")
+	defer cancel()
 	pageNum := dto.PageNum
 	if pageNum == 0 {
 		pageNum = 1
@@ -299,7 +302,8 @@ func FetchWeightRecord(dto dto.QueryRecordDto) []vo.WeightRecordVo {
 
 // DeleteWeightRecord Delete weight record
 func DeleteWeightRecord(dto dto.DelRecordDto) {
-	col, ctx := Collection("weightrecord")
+	col, ctx, cancel := Collection("weightrecord")
+	defer cancel()
 	recordBsonID, _ := primitive.ObjectIDFromHex(dto.ID)
 	filter := bson.M{
 		"_id": recordBsonID,
@@ -312,7 +316,8 @@ func DeleteWeightRecord(dto dto.DelRecordDto) {
 
 // StatTotalWeight Statis total weight
 func StatTotalWeight(taskID primitive.ObjectID) vo.StatTotalWeightVo {
-	col, ctx := Collection("weightrecord")
+	col, ctx, cancel := Collection("weightrecord")
+	defer cancel()
 	filter := []bson.M{
 		{
 			"$match": bson.M{

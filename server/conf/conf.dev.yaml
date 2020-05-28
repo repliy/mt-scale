@@ -23,8 +23,8 @@ router:
   view: views/*
   
 log:
-  infofile: /tmp/info.log
-  errorfile: /tmp/error.err
+  infofile: /tmp/ssr/info.log
+  errorfile: /tmp/ssr/error.err
 
 jwt:
   token:

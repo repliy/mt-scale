@@ -16,7 +16,8 @@ import (
 
 // AddUser Add a new user
 func AddUser(user entitys.User) primitive.ObjectID {
-	col, ctx := Collection("user")
+	col, ctx, cancel := Collection("user")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{
 			Key:   "username",
@@ -42,7 +43,8 @@ func AddUser(user entitys.User) primitive.ObjectID {
 
 // Login User login
 func Login(dto dto.LoginDto) vo.LoginVo {
-	col, ctx := Collection("user")
+	col, ctx, cancel := Collection("user")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{
 			Key:   "username",

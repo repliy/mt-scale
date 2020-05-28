@@ -14,7 +14,8 @@ import (
 
 // AddTask Add a new task
 func AddTask() primitive.ObjectID {
-	col, ctx := Collection("task")
+	col, ctx, cancel := Collection("task")
+	defer cancel()
 	task := entitys.Task{
 		Creator:    "admin",
 		CreateTime: time.Now(),
@@ -30,7 +31,8 @@ func AddTask() primitive.ObjectID {
 
 // GetCurrentTask Get current task ID
 func GetCurrentTask() primitive.ObjectID {
-	col, ctx := Collection("task")
+	col, ctx, cancel := Collection("task")
+	defer cancel()
 	filter := []bson.M{
 		{
 			"$match": primitive.M{
@@ -64,7 +66,8 @@ func GetCurrentTask() primitive.ObjectID {
 
 // UpdTaskStatus Update task status(start/complete)
 func UpdTaskStatus(dto dto.TaskUpdDto) {
-	col, ctx := Collection("task")
+	col, ctx, cancel := Collection("task")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{
 			Key:   "_id",

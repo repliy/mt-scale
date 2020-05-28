@@ -10,11 +10,12 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
-	client     *mongo.Client
-	ctx        context.Context
+	client *mongo.Client
+	// ctx        context.Context
 	checkCount int
 )
 
@@ -43,21 +44,24 @@ func init() {
 // MongoDbCheck Check mongo database connect.
 func MongoDbCheck() {
 	if client != nil {
-		if err := client.Ping(context.TODO(), nil); err != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer func() {
+			cancel()
+			syslog.Debug("Ping context cancel")
+		}()
+		if err := client.Ping(ctx, readpref.Primary()); err != nil {
 			syslog.Error(err, "MongoDbCheck")
 		}
 	}
 }
 
-func database() *mongo.Database {
+// Collection Get mongo collection
+func Collection(name string) (*mongo.Collection, context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
 	dbName := common.GetConfStr("database.name")
 	db := client.Database(dbName)
-	return db
-}
 
-// Collection Get mongo collection
-func Collection(name string) (*mongo.Collection, context.Context) {
-	db := database()
 	collection := db.Collection(name)
-	return collection, ctx
+	return collection, ctx, cancel
 }

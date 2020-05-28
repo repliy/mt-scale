@@ -65,7 +65,8 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 		return boxID
 	}
 	// new one, insert to database
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	timeNow := time.Now()
 	taskBsonID, _ := primitive.ObjectIDFromHex(box.TaskID)
 	insertObj := entitys.Box{
@@ -86,7 +87,8 @@ func AddBox(box dto.AddBoxDto) primitive.ObjectID {
 }
 
 func validateBox(box dto.AddBoxDto) (primitive.ObjectID, string, error) {
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	taskBsonID, _ := primitive.ObjectIDFromHex(box.TaskID)
 	filter := bson.D{
 		primitive.E{
@@ -117,7 +119,8 @@ func validateBox(box dto.AddBoxDto) (primitive.ObjectID, string, error) {
 
 // FetchLatestBoxes get box with number on last time
 func FetchLatestBoxes(dto dto.QueryLatestBoxDto) []vo.AddBoxVo {
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
 	filter := []bson.M{
 		{
@@ -169,7 +172,8 @@ func FetchLatestBoxes(dto dto.QueryLatestBoxDto) []vo.AddBoxVo {
 
 // SelectBoxByID Select box by id
 func SelectBoxByID(id primitive.ObjectID) entitys.Box {
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{Key: "_id", Value: id},
 	}
@@ -190,7 +194,8 @@ func SelectBoxByID(id primitive.ObjectID) entitys.Box {
 
 // FetchBoxes Get boxes by type
 func FetchBoxes(dto dto.QueryBoxDto) []entitys.Box {
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
 	filter := []bson.M{
 		{
@@ -225,7 +230,8 @@ func FetchBoxes(dto dto.QueryBoxDto) []entitys.Box {
 
 // StatBoxWeight Statis the weight according to the type of box
 func StatBoxWeight(taskID primitive.ObjectID) []vo.StatBoxWeightVo {
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	filter := []bson.M{
 		{
 			"$lookup": bson.M{
@@ -280,7 +286,8 @@ func StatBoxWeight(taskID primitive.ObjectID) []vo.StatBoxWeightVo {
 
 // GetTallyInfo Get vessel plant tally info
 func GetTallyInfo(dto dto.QueryTallyBoxDto) []vo.BoxTallyVo {
-	col, ctx := Collection("box")
+	col, ctx, cancel := Collection("box")
+	defer cancel()
 	taskBsonID, _ := primitive.ObjectIDFromHex(dto.TaskID)
 	filter := []bson.M{
 		{

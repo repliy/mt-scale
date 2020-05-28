@@ -14,7 +14,8 @@ import (
 
 // AddSpecies Add species tag
 func AddSpecies(spec entitys.Species) primitive.ObjectID {
-	col, ctx := Collection("species")
+	col, ctx, cancel := Collection("species")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{Key: "name", Value: spec.Name},
 	}
@@ -67,7 +68,8 @@ func AddSpecies(spec entitys.Species) primitive.ObjectID {
 
 // SelectSpeciesByID Select species by id
 func SelectSpeciesByID(id primitive.ObjectID) entitys.Species {
-	col, ctx := Collection("species")
+	col, ctx, cancel := Collection("species")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{Key: "_id", Value: id},
 	}
@@ -88,7 +90,8 @@ func SelectSpeciesByID(id primitive.ObjectID) entitys.Species {
 
 // FetchAllSpeciesInfo Fetch all species infos
 func FetchAllSpeciesInfo() []entitys.Species {
-	col, ctx := Collection("species")
+	col, ctx, cancel := Collection("species")
+	defer cancel()
 	filter := bson.D{}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
@@ -109,7 +112,8 @@ func FetchAllSpeciesInfo() []entitys.Species {
 
 // FetchAllStatSpeciesInfo Fetch all stat species vo
 func FetchAllStatSpeciesInfo() []vo.StatSpecWeightVo {
-	col, ctx := Collection("species")
+	col, ctx, cancel := Collection("species")
+	defer cancel()
 	filter := bson.D{}
 	cur, err := col.Find(ctx, filter)
 	if err != nil {
@@ -130,7 +134,8 @@ func FetchAllStatSpeciesInfo() []vo.StatSpecWeightVo {
 
 // StatSpecieszWeight Statistical weighing record
 func StatSpecieszWeight(taskID primitive.ObjectID) []vo.StatSpecWeightVo {
-	col, ctx := Collection("species")
+	col, ctx, cancel := Collection("species")
+	defer cancel()
 	filter := []bson.M{
 		{
 			"$lookup": bson.M{

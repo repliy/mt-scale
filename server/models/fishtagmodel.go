@@ -13,7 +13,8 @@ import (
 
 // AddTag Add fish tag
 func AddTag(tag entitys.FishTag) primitive.ObjectID {
-	col, ctx := Collection("fishtag")
+	col, ctx, cancel := Collection("fishtag")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{Key: "name", Value: tag.Name},
 	}
@@ -41,7 +42,8 @@ func AddTag(tag entitys.FishTag) primitive.ObjectID {
 
 // SelectTagByID Select tag by id
 func SelectTagByID(id primitive.ObjectID) entitys.FishTag {
-	col, ctx := Collection("fishtag")
+	col, ctx, cancel := Collection("fishtag")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{Key: "_id", Value: id},
 	}
@@ -62,7 +64,8 @@ func SelectTagByID(id primitive.ObjectID) entitys.FishTag {
 
 // SelectTagByName Select tag by tag name
 func SelectTagByName(name string) entitys.FishTag {
-	col, ctx := Collection("fishtag")
+	col, ctx, cancel := Collection("fishtag")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{
 			Key:   "name",
@@ -86,7 +89,8 @@ func SelectTagByName(name string) entitys.FishTag {
 
 // UpdateFishTagStatus update fish tag status
 func UpdateFishTagStatus(id primitive.ObjectID, used bool) {
-	col, ctx := Collection("fishtag")
+	col, ctx, cancel := Collection("fishtag")
+	defer cancel()
 	filter := bson.D{
 		primitive.E{Key: "_id", Value: id},
 	}
