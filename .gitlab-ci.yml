@@ -1,0 +1,42 @@
+# Node docker image on which this would be run
+image: docker:19.03
+
+variables:
+  SERVER_VERSION: 0.1.0
+
+stages:
+  - build-server
+  - deploy-server
+
+ssr-server-build:
+  stage: build-server
+  script:
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" mt-registry.hide.ai
+    - docker build -t mt-registry.hide.ai/skynet/development/ssr/ssr-server:$SERVER_VERSION .
+    - docker push mt-registry.hide.ai/skynet/development/ssr/ssr-server:$SERVER_VERSION
+  tags: [mt-utah-1] 
+  when: manual
+  only:
+    - tags
+    - master
+  
+ssr-server-deploy:
+  stage: deploy-server
+  variables:
+    SRS_DEBUG: ""
+    SRS_SERVER_PORT: 8085
+  script:
+    - docker images
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" mt-registry.hide.ai
+    - docker volume create ssr-log-storage
+    - docker ps -q --filter name="ssr-server" | xargs -r docker rm -f
+    - docker run -d --name ssr-server --restart always
+      -p ${SRS_SERVER_PORT}:${SRS_SERVER_PORT}/tcp
+      -e DEBUG="${SFU_DEBUG}"
+      -v ssr-log-storage:/tmp/ssr/.logs 
+      mt-registry.hide.ai/skynet/development/ssr/ssr-server:$SERVER_VERSION
+  tags: [mt-utah-1]      
+  when: manual
+  only:
+    - tags
+    - master

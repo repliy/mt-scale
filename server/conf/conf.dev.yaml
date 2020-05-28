@@ -12,7 +12,7 @@ redis:
   password: 123456
 
 service:
-  port: :8083
+  port: :8085
   ignoreurl:
     - /api/user/login
     - /api/species/crt
@@ -23,8 +23,8 @@ router:
   view: views/*
   
 log:
-  infofile: /tmp/ssr/info.log
-  errorfile: /tmp/ssr/error.err
+  infofile: /tmp/ssr/info.logs
+  errorfile: /tmp/ssr/error.logs
 
 jwt:
   token:
