@@ -10,7 +10,7 @@
   "dependencies": {
     "@tensorflow-models/coco-ssd": "../ssd_scale",
     "@tensorflow/tfjs": "1.2.9",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "js-cookie": "2.2.0",
     "vue": "^2.6.11",
